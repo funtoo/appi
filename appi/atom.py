@@ -19,17 +19,14 @@ class AtomError(Exception):
 
 class Atom:
 
-    patterns = {
-        'ext_prefix': r'(?P<ext_prefix>!!?)',
-        'prefix': r'(?P<prefix>>=|<=|<|=|>|~)',
-        'category': r'(?P<category>[a-z0-9]+(-[a-z0-9]+)?)',
-        'package': r'(?P<package>[a-zA-Z0-9_-]+)',
-        'version': (
-            r'(?P<version>[0-9]+(\.[0-9]+)*[a-z]?'
-            r'(_(alpha|beta|pre|rc|p)[0-9]+)*(-r[0-9]+)?)',
-        ),
-        'slot': r'(?P<slot>\*|=|([0-9a-zA-Z_.-]+(/[0-9a-zA-Z_.-]+)?=?))',
-    }
+    patterns = dict(map(lambda x: (x[0], '(?P<{}>{})'.format(x[0], x[1])), [
+        ('ext_prefix', r'!!?'),
+        ('prefix', r'>=|<=|<|=|>|~'),
+        ('category', r'[a-z0-9]+(-[a-z0-9]+)?'),
+        ('package', r'[a-zA-Z0-9_-]+'),
+        ('version', r'[0-9]+(\.[0-9]+)*[a-z]?(_(alpha|beta|pre|rc|p)[0-9]+)*(-r[0-9]+)?'),
+        ('slot', r'\*|=|([0-9a-zA-Z_.-]+(/[0-9a-zA-Z_.-]+)?=?)'),
+    ]))
 
     atom_re = re.compile((
         r'^{ext_prefix}?{prefix}?({category}/)?{package}'
