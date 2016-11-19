@@ -4,6 +4,7 @@ import re
 
 from .base.exception import PortageError
 from .base.constant import PORTAGE_DIR
+from .version import Version
 
 __all__ = [
     'Ebuild', 'EbuildError',
@@ -26,7 +27,7 @@ class Ebuild:
 
     path_re = re.compile(
         r'^.*/(?P<category>[^/]+?)/(?P<package>[^/]+?)/(?P<package_check>[^/]+?)-'
-        r'(?P<version>[0-9]+(\.[0-9]+)*[a-z]?(_(alpha|beta|pre|rc|p)[0-9]+)*(-r[0-9]+)?)'
+        r'(?P<version>\d+(\.\d+)*[a-z]?(_(alpha|beta|pre|rc|p)\d+)*(-r\d+)?)'
         r'\.ebuild$'
     )
 
@@ -53,11 +54,31 @@ class Ebuild:
                 raw_path, pkg1=self.package, pkg2=package_check,
                 code='package_name_mismatch')
 
+    def __str__(self):
+        return '{cat}/{pkg}-{ver}'.format(
+            cat=self.category, pkg=self.package, ver=self.version)
+
+    def __repr__(self):
+        return "<Ebuild: '{}'>".format(str(self))
+
+    def get_version(self):
+        """Return the version as Version object."""
+        return Version(self.version)
+
     def matches_atom(self, atom):
         if atom.category and self.category != atom.category:
             return False
         if self.package != atom.package:
             return False
         if atom.version:
-            pass  # TODO
+            # TODO Handle atom version ending with '*'
+            v1 = self.get_version()
+            v2 = atom.get_version()
+            selector = atom.selector
+            if selector == '~':
+                v1 = abs(v1)
+                selector = '='
+            comp_method = Version.selector_to_comp_method[selector]
+            if not getattr(v1, comp_method)(v2):
+                return False
         return True

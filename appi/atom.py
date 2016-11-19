@@ -6,6 +6,7 @@ from .base.constant import PORTAGE_DIR
 from .base.exception import PortageError
 from .base.util.decorator import cached
 from .ebuild import Ebuild
+from .version import Version
 
 __all__ = [
     'Atom', 'SimpleAtom', 'AtomError',
@@ -29,7 +30,7 @@ class Atom:
         - category: the category name
         - version: the version number
         - slot: the slot, subslot and slot operator
-        - prefix: the version selector (>=, <=, <, =, > or ~)
+        - selector: the version selector (>=, <=, <, =, > or ~)
         - ext_prefix: the extended prefix (! or !!)
         - use: the use dependency
 
@@ -40,16 +41,16 @@ class Atom:
 
     patterns = dict(map(lambda x: (x[0], '(?P<{}>{})'.format(x[0], x[1])), [
         ('ext_prefix', r'!!?'),
-        ('prefix', r'>=|<=|<|=|>|~'),
+        ('selector', r'>=|<=|<|=|>|~'),
         ('category', r'[a-z0-9]+(-[a-z0-9]+)?'),
         ('package', r'[a-zA-Z0-9+_-]+?'),
-        ('version', r'[0-9]+(\.[0-9]+)*[a-z]?(_(alpha|beta|pre|rc|p)[0-9]+)*(-r[0-9]+)?\*?'),
+        ('version', r'\d+(\.\d+)*[a-z]?(_(alpha|beta|pre|rc|p)\d+)*(-r\d+)?\*?'),
         ('slot', r'\*|=|([0-9a-zA-Z_.-]+(/[0-9a-zA-Z_.-]+)?=?)'),
         ('use', r'[-!]?[a-z][a-z0-9_-]*[?=]?(,[-!]?[a-z][a-z0-9_-]*[?=]?)*'),
     ]))
 
     atom_re = re.compile((
-        r'^{ext_prefix}?{prefix}?({category}/)?{package}'
+        r'^{ext_prefix}?{selector}?({category}/)?{package}'
         r'(-{version})?(:{slot})?(\[{use}\])?$'
     ).format(**patterns))
 
@@ -70,19 +71,38 @@ class Atom:
             raise AtomError(
                 "{atom} may be ambiguous, please specify the category.",
                 atom_string, code='missing_category')
-        if self.version and not self.prefix:
+        if self.version and not self.selector:
             raise AtomError(
-                "Missing version prefix, did you mean \"={atom}\"?",
-                atom_string, code='missing_prefix')
-        if self.prefix and not self.version:
+                "Missing version selector, did you mean \"={atom}\"?",
+                atom_string, code='missing_selector')
+        if self.selector and not self.version:
             raise AtomError(
                 "{atom} misses a version number.", atom_string,
                 code='missing_version')
+        if self.selector == '~' and '-r' in self.version:
+            raise AtomError(
+                "{atom} is invalid, you can't give a revision number with "
+                "the ~ selector.", atom_string, code='unexpected_revision')
+
+    def __str__(self):
+        return self.raw_value
+
+    def __repr__(self):
+        return "<Atom: '{}'>".format(str(self))
+
+    def get_version(self):
+        """Return the version as Version object."""
+        version = self.version
+        if not version:
+            return None
+        if version[-1] == '*':
+            version = version[:-1]  # TODO you sure about that?
+        return Version(version)
 
     def get_version_glob_pattern(self):
-        if not self.version or self.prefix in ['>=', '>', '<', '<=']:
+        if not self.version or self.selector in ['>=', '>', '<', '<=']:
             return '*'
-        if self.prefix == '~':
+        if self.selector == '~':
             return self.version + '*'
         return self.version
 
@@ -107,5 +127,5 @@ class SimpleAtom(Atom):
     """An atom that doesn't accept extended prefix and use dependency."""
 
     atom_re = re.compile((
-        r'^{prefix}?({category}/)?{package}(-{version})?(:{slot})?$'
+        r'^{selector}?({category}/)?{package}(-{version})?(:{slot})?$'
     ).format(**Atom.patterns))
