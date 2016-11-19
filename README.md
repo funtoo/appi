@@ -1,2 +1,2 @@
-# potage
-Portage python API
+# appi
+Another Portage Python Interface
