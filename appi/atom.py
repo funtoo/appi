@@ -1,21 +1,25 @@
 # -*- coding: utf-8 -*-
+from pathlib import Path
 import re
+
+from .base.constant import PORTAGE_DIR
+from .base.exception import PortageError
+from .base.util.decorator import cached
+from .ebuild import Ebuild
 
 __all__ = [
     'Atom', 'SimpleAtom', 'AtomError',
 ]
 
 
-class AtomError(Exception):
+class AtomError(PortageError):
     """Error related to an atom."""
 
-    def __init__(self, message, atom_string, code=None):
-        self.message = message
-        self.atom_string = atom_string
-        self.code = code or 'invalid'
+    default_code = 'invalid'
 
-    def __str__(self):
-        return self.message.format(atom=self.atom_string)
+    def __init__(self, message, atom, **kwargs):
+        self.atom = atom
+        super().__init__(message, atom=atom, **kwargs)
 
 
 class Atom:
@@ -32,12 +36,14 @@ class Atom:
     See also: ebuild(5) man pages
     """
 
+    portage_dir = PORTAGE_DIR
+
     patterns = dict(map(lambda x: (x[0], '(?P<{}>{})'.format(x[0], x[1])), [
         ('ext_prefix', r'!!?'),
         ('prefix', r'>=|<=|<|=|>|~'),
         ('category', r'[a-z0-9]+(-[a-z0-9]+)?'),
-        ('package', r'[a-zA-Z0-9_-]+'),
-        ('version', r'[0-9]+(\.[0-9]+)*[a-z]?(_(alpha|beta|pre|rc|p)[0-9]+)*(-r[0-9]+)?'),
+        ('package', r'[a-zA-Z0-9+_-]+?'),
+        ('version', r'[0-9]+(\.[0-9]+)*[a-z]?(_(alpha|beta|pre|rc|p)[0-9]+)*(-r[0-9]+)?\*?'),
         ('slot', r'\*|=|([0-9a-zA-Z_.-]+(/[0-9a-zA-Z_.-]+)?=?)'),
         ('use', r'[-!]?[a-z][a-z0-9_-]*[?=]?(,[-!]?[a-z][a-z0-9_-]*[?=]?)*'),
     ]))
@@ -72,6 +78,29 @@ class Atom:
             raise AtomError(
                 "{atom} misses a version number.", atom_string,
                 code='missing_version')
+
+    def get_version_glob_pattern(self):
+        if not self.version or self.prefix in ['>=', '>', '<', '<=']:
+            return '*'
+        if self.prefix == '~':
+            return self.version + '*'
+        return self.version
+
+    def get_glob_pattern(self):
+        params = {
+            'pkg': self.package,
+            'cat': self.category or '*',
+            'ver': self.get_version_glob_pattern(),
+        }
+        return '{cat}/{pkg}/{pkg}-{ver}.ebuild'.format(**params)
+
+    @cached
+    def list_matching_ebuilds(self):
+        paths = Path(self.portage_dir).glob(self.get_glob_pattern())
+        return {e for e in (Ebuild(p) for p in paths) if e.matches_atom(self)}
+
+    def exists(self):
+        return bool(self.list_matching_ebuilds())
 
 
 class SimpleAtom(Atom):
