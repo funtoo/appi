@@ -22,8 +22,8 @@ class Atom:
     patterns = {
         'ext_prefix': r'(?P<ext_prefix>!!?)',
         'prefix': r'(?P<prefix>>=|<=|<|=|>|~)',
-        'category': r'(?P<cat>[a-z0-9]+(-[a-z0-9]+)?)',
-        'package': r'(?P<pkg>[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\+?)',
+        'category': r'(?P<category>[a-z0-9]+(-[a-z0-9]+)?)',
+        'package': r'(?P<package>[a-zA-Z0-9_-]+)',
         'version': (
             r'(?P<version>[0-9]+(\.[0-9]+)*[a-z]?'
             r'(_(alpha|beta|pre|rc|p)[0-9]+)*(-r[0-9]+)?)',
