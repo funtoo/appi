@@ -19,6 +19,17 @@ class AtomError(Exception):
 
 
 class Atom:
+    """An ebuild atom with the following properties:
+
+        - package: the package name
+        - category: the category name
+        - version: the version number
+        - slot: the slot, subslot and slot operator
+        - prefix: the version selector (>=, <=, <, =, > or ~)
+        - ext_prefix: the extended prefix (! or !!)
+
+    See also: ebuild(5) man pages
+    """
 
     patterns = dict(map(lambda x: (x[0], '(?P<{}>{})'.format(x[0], x[1])), [
         ('ext_prefix', r'!!?'),
@@ -35,6 +46,10 @@ class Atom:
     ).format(**patterns))
 
     def __init__(self, atom_string, strict=True):
+        """Create an atom object from a raw atom string.
+        If `strict` is `True`, then the package category is required.
+        Raise `AtomError` if the atom string is not valid.
+        """
         match = self.atom_re.match(atom_string)
         if not match:
             raise AtomError("{atom} is not a valid atom.", atom_string)
@@ -44,17 +59,21 @@ class Atom:
             setattr(self, k, v)
 
         if strict and not self.category:
-            raise AtomError("{atom} may be ambiguous, please specify the category.",
-                            atom_string, code='missing_category')
+            raise AtomError(
+                "{atom} may be ambiguous, please specify the category.",
+                atom_string, code='missing_category')
         if self.version and not self.prefix:
-            raise AtomError("Missing version prefix, did you mean \"={atom}\"?",
-                            atom_string, code='missing_prefix')
+            raise AtomError(
+                "Missing version prefix, did you mean \"={atom}\"?",
+                atom_string, code='missing_prefix')
         if self.prefix and not self.version:
-            raise AtomError("{atom} misses a version number.", atom_string,
-                            code='missing_version')
+            raise AtomError(
+                "{atom} misses a version number.", atom_string,
+                code='missing_version')
 
 
 class SimpleAtom(Atom):
+    """An atom that doesn't accept extended prefix and use dependency."""
 
     atom_re = re.compile((
         r'^{prefix}?({category}/)?{package}(-{version})?(:{slot})?$'
