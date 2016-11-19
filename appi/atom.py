@@ -9,9 +9,10 @@ __all__ = [
 class AtomError(Exception):
     """Error related to an atom."""
 
-    def __init__(self, message, atom_string):
+    def __init__(self, message, atom_string, code=None):
         self.message = message
         self.atom_string = atom_string
+        self.code = code or 'invalid'
 
     def __str__(self):
         return self.message.format(atom=self.atom_string)
@@ -43,11 +44,14 @@ class Atom:
             setattr(self, k, v)
 
         if strict and not self.category:
-            raise AtomError("{atom} may be ambiguous, please specify the category.", atom_string)
+            raise AtomError("{atom} may be ambiguous, please specify the category.",
+                            atom_string, code='missing_category')
         if self.version and not self.prefix:
-            raise AtomError("Missing version prefix, did you mean \"={atom}\"?", atom_string)
+            raise AtomError("Missing version prefix, did you mean \"={atom}\"?",
+                            atom_string, code='missing_prefix')
         if self.prefix and not self.version:
-            raise AtomError("{atom} misses a version number.", atom_string)
+            raise AtomError("{atom} misses a version number.", atom_string,
+                            code='missing_version')
 
 
 class SimpleAtom(Atom):
