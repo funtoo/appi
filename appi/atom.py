@@ -27,6 +27,7 @@ class Atom:
         - slot: the slot, subslot and slot operator
         - prefix: the version selector (>=, <=, <, =, > or ~)
         - ext_prefix: the extended prefix (! or !!)
+        - use: the use dependency
 
     See also: ebuild(5) man pages
     """
@@ -38,11 +39,12 @@ class Atom:
         ('package', r'[a-zA-Z0-9_-]+'),
         ('version', r'[0-9]+(\.[0-9]+)*[a-z]?(_(alpha|beta|pre|rc|p)[0-9]+)*(-r[0-9]+)?'),
         ('slot', r'\*|=|([0-9a-zA-Z_.-]+(/[0-9a-zA-Z_.-]+)?=?)'),
+        ('use', r'[-!]?[a-z][a-z0-9_-]*[?=]?(,[-!]?[a-z][a-z0-9_-]*[?=]?)*'),
     ]))
 
     atom_re = re.compile((
         r'^{ext_prefix}?{prefix}?({category}/)?{package}'
-        r'(-{version})?(:{slot})?$'
+        r'(-{version})?(:{slot})?(\[{use}\])?$'
     ).format(**patterns))
 
     def __init__(self, atom_string, strict=True):
