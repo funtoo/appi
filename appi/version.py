@@ -20,6 +20,15 @@ class VersionError(PortageError):
 
 
 class Version:
+    """A package version characterized by the following properties:
+
+        - base: 1.2.3
+        - letter: d
+        - suffix: _rc5
+        - revision: 6
+
+    The example numbers above match the version: 1.2.3d_rc5-r6
+    """
 
     version_re = re.compile(
         r'^(?P<base>\d+(\.\d+)*)(?P<letter>[a-z]?)'
