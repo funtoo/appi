@@ -13,7 +13,6 @@ class AppiError(Exception):
             self.message = args[0]
         except IndexError:
             self.message = self.__class__.__name__
-        print(self.message)
         self.code = kwargs.pop('code', self.default_code)
         self.message_context = kwargs
 
