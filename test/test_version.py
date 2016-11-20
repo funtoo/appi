@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# Distributed under the terms of the GNU General Public License v2
 import unittest
 
 from appi.version import Version, VersionError
