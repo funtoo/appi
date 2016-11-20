@@ -104,7 +104,13 @@ class Version:
         )
 
     def get_base_tuple(self):
-        return tuple(map(lambda x: int(x), self.base.split('.')))
+        """Leading 0 can be omitted for the major version number, but should be
+        considered as decimal parts for the next version numbers.
+        """
+        base = self.base.split('.')
+        return (int(base[0]),) + tuple(
+            map(lambda x: float('0.' + x), base[1:])
+        )
 
     def get_letter_tuple(self):
         return ord(self.letter) - 96 if self.letter else 0
