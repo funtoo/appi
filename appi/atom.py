@@ -9,7 +9,7 @@ from .ebuild import Ebuild
 from .version import Version
 
 __all__ = [
-    'Atom', 'SimpleAtom', 'AtomError',
+    'Atom', 'QueryAtom', 'AtomError',
 ]
 
 
@@ -33,6 +33,7 @@ class Atom:
         - selector: the version selector (>=, <=, <, =, > or ~)
         - ext_prefix: the extended prefix (! or !!)
         - use: the use dependency
+        - overlay: not used in this class, but in subclasses
 
     See also: ebuild(5) man pages
     """
@@ -47,6 +48,7 @@ class Atom:
         ('version', r'\d+(\.\d+)*[a-z]?(_(alpha|beta|pre|rc|p)\d+)*(-r\d+)?\*?'),
         ('slot', r'\*|=|([0-9a-zA-Z_.-]+(/[0-9a-zA-Z_.-]+)?=?)'),
         ('use', r'[-!]?[a-z][a-z0-9_-]*[?=]?(,[-!]?[a-z][a-z0-9_-]*[?=]?)*'),
+        ('overlay', r'[a-za-Z0-9_-]+'),
     ]))
 
     atom_re = re.compile((
@@ -55,7 +57,7 @@ class Atom:
     ).format(**patterns))
 
     def __init__(self, atom_string, strict=True):
-        """Create an atom object from a raw atom string.
+        """Create an Atom object from a raw atom string.
         If `strict` is `True`, then the package category is required.
         Raise `AtomError` if the atom string is not valid.
         """
@@ -111,6 +113,10 @@ class Atom:
         return self.version
 
     def get_glob_pattern(self):
+        """Return a glob pattern that will match ebuild files that *MAY* match this atom.
+        All matching ebuilds will be matched by the glob pattern,
+        but not all files matched by the glob pattern will match the atom.
+        """
         params = {
             'pkg': self.package,
             'cat': self.category or '*',
@@ -120,16 +126,22 @@ class Atom:
 
     @cached
     def list_matching_ebuilds(self):
+        """Return the set of ebuilds matching this atom."""
         paths = Path(self.portage_dir).glob(self.get_glob_pattern())
         return {e for e in (Ebuild(p) for p in paths) if e.matches_atom(self)}
 
-    def exists(self):
+    def matches_existing_ebuild(self):
+        """Return True if this atom matches at least one existing ebuild."""
         return bool(self.list_matching_ebuilds())
 
 
-class SimpleAtom(Atom):
-    """An atom that doesn't accept extended prefix and use dependency."""
+class QueryAtom(Atom):
+    """An atom used for querying an ebuild.
+    This kind of atom doesn't accept extended prefix and use dependencies, but
+    accepts an overlay restriction.
+    """
 
     atom_re = re.compile((
-        r'^{selector}?({category}/)?{package}(-{version})?(:{slot})?$'
+        r'^{selector}?({category}/)?{package}(-{version})?'
+        r'(:{slot})?(::{overlay})?$'
     ).format(**Atom.patterns))

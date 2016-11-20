@@ -22,6 +22,22 @@ class EbuildError(PortageError):
 
 
 class Ebuild:
+    """An ebuild file. It defines the following properties:
+
+        - category
+        - package
+        - version
+
+    This is not yet implemented, but it should also be able to determine some
+    properties defined in the ebuild file:
+
+        - use flags
+        - slots
+        - license
+        - home page
+        - description
+        - ...
+    """
 
     portage_dir = PORTAGE_DIR
 
@@ -32,6 +48,10 @@ class Ebuild:
     )
 
     def __init__(self, path):
+        """Create an Ebuild object from an ebuild path.
+        The path may be either absolute, or relative from a portage directory.
+        Raise `EbuildError` if the path does not describe a valid ebuild.
+        """
         if not isinstance(path, Path):
             path = str(path)
             if path[0] == '/':
@@ -66,6 +86,9 @@ class Ebuild:
         return Version(self.version)
 
     def matches_atom(self, atom):
+        """Return True if this ebuild matches the given atom.
+        This method still lacks SLOT check.
+        """
         if atom.category and self.category != atom.category:
             return False
         if self.package != atom.package:
