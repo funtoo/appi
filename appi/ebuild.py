@@ -71,11 +71,12 @@ class Ebuild:
         if self.package != atom.package:
             return False
         if atom.version:
-            # TODO Handle atom version ending with '*'
             v1 = self.get_version()
             v2 = atom.get_version()
             selector = atom.selector
-            if selector == '~':
+            if atom.version[-1] == '*':
+                selector = '^'
+            elif selector == '~':
                 v1 = abs(v1)
                 selector = '='
             comp_method = Version.selector_to_comp_method[selector]

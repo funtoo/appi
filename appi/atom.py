@@ -82,7 +82,11 @@ class Atom:
         if self.selector == '~' and '-r' in self.version:
             raise AtomError(
                 "{atom} is invalid, you can't give a revision number with "
-                "the ~ selector.", atom_string, code='unexpected_revision')
+                "the '~' selector.", atom_string, code='unexpected_revision')
+        if self.version and self.version[-1] == '*' and self.selector != '=':
+            raise AtomError(
+                "{atom} is invalid, '*' postfix can only be used with "
+                "the '=' selector.", atom_string, code='unexpected_postfix')
 
     def __str__(self):
         return self.raw_value
@@ -96,7 +100,7 @@ class Atom:
         if not version:
             return None
         if version[-1] == '*':
-            version = version[:-1]  # TODO you sure about that?
+            version = version[:-1]
         return Version(version)
 
     def get_version_glob_pattern(self):

@@ -34,6 +34,7 @@ class Version:
         '=': '__eq__',
         '<': '__lt__',
         '>': '__gt__',
+        '^': 'startswith',
     }
 
     @classmethod
@@ -135,3 +136,6 @@ class Version:
         self_tuple = self.get_version_tuple()
         other_tuple = other.get_version_tuple()
         return self.version_tuple_compare(self_tuple, other_tuple)
+
+    def startswith(self, version):
+        return str(self).startswith(str(version))
