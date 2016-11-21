@@ -49,7 +49,7 @@ class Atom:
         ('version', r'\d+(\.\d+)*[a-z]?(_(alpha|beta|pre|rc|p)\d+)*(-r\d+)?\*?'),
         ('slot', r'\*|=|([0-9a-zA-Z_.-]+(/[0-9a-zA-Z_.-]+)?=?)'),
         ('use', r'[-!]?[a-z][a-z0-9_-]*[?=]?(,[-!]?[a-z][a-z0-9_-]*[?=]?)*'),
-        ('overlay', r'[a-za-Z0-9_-]+'),
+        ('overlay', r'[a-zA-Z0-9_-]+'),
     ]))
 
     atom_re = re.compile((

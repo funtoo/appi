@@ -5,3 +5,4 @@ __all__ = [
 ]
 
 PORTAGE_DIR = '/usr/portage'
+CONF_DIR = '/etc/portage'
