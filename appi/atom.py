@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 # Distributed under the terms of the GNU General Public License v2
+from functools import reduce
 from pathlib import Path
 import re
 
-from .base.constant import PORTAGE_DIR
 from .base.exception import PortageError
 from .base.util.decorator import cached
+from .conf import Repository
 from .ebuild import Ebuild
 from .version import Version
 
@@ -38,8 +39,6 @@ class Atom:
 
     See also: ebuild(5) man pages
     """
-
-    portage_dir = PORTAGE_DIR
 
     patterns = dict(map(lambda x: (x[0], '(?P<{}>{})'.format(x[0], x[1])), [
         ('ext_prefix', r'!!?'),
@@ -128,7 +127,10 @@ class Atom:
     @cached
     def list_matching_ebuilds(self):
         """Return the set of ebuilds matching this atom."""
-        paths = Path(self.portage_dir).glob(self.get_glob_pattern())
+        glob_pattern = self.get_glob_pattern()
+        locations = Repository.list_locations()
+        paths = reduce(lambda x, y: x+y, (
+            list(Path(d).glob(glob_pattern)) for d in locations))
         return {e for e in (Ebuild(p) for p in paths) if e.matches_atom(self)}
 
     def matches_existing_ebuild(self):

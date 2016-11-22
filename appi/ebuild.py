@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 # Distributed under the terms of the GNU General Public License v2
-from pathlib import Path
 import re
 
 from .base.exception import PortageError
-from .base.constant import PORTAGE_DIR
+from .conf import Repository
 from .version import Version
 
 __all__ = [
@@ -40,10 +39,9 @@ class Ebuild:
         - ...
     """
 
-    portage_dir = PORTAGE_DIR
-
     path_re = re.compile(
-        r'^.*/(?P<category>[^/]+?)/(?P<package>[^/]+?)/(?P<package_check>[^/]+?)-'
+        r'^(?P<repo_location>/.*/)'
+        r'(?P<category>[^/]+?)/(?P<package>[^/]+?)/(?P<package_check>[^/]+?)-'
         r'(?P<version>\d+(\.\d+)*[a-z]?(_(alpha|beta|pre|rc|p)\d+)*(-r\d+)?)'
         r'\.ebuild$'
     )
@@ -53,31 +51,31 @@ class Ebuild:
         The path may be either absolute, or relative from a portage directory.
         Raise `EbuildError` if the path does not describe a valid ebuild.
         """
-        if not isinstance(path, Path):
-            path = str(path)
-            if path[0] == '/':
-                path = Path(path)
-            else:
-                path = Path(self.portage_dir) / path
-        raw_path = str(path)
-        match = self.path_re.match(raw_path)
+        path = str(path)
+        match = self.path_re.match(path)
         if not match:
-            raise EbuildError("{ebuild} is not a valid ebuild path.", raw_path)
+            raise EbuildError("{ebuild} is not a valid ebuild path.", path)
 
         group_dict = match.groupdict()
         package_check = group_dict.pop('package_check')
+        repo_location = group_dict.pop('repo_location')
         for k, v in group_dict.items():
             setattr(self, k, v)
 
         if self.package != package_check:
             raise EbuildError(
                 "Package name mismatch in \"{ebuild}\": {pkg1} != {pkg2}",
-                raw_path, pkg1=self.package, pkg2=package_check,
+                path, pkg1=self.package, pkg2=package_check,
                 code='package_name_mismatch')
 
+        self.repository = Repository.get(location=repo_location)
+
     def __str__(self):
-        return '{cat}/{pkg}-{ver}'.format(
-            cat=self.category, pkg=self.package, ver=self.version)
+        template = '{cat}/{pkg}-{ver}'
+        if self.repository:
+            template += '::{repo}'
+        return template.format(cat=self.category, pkg=self.package,
+                               ver=self.version, repo=self.repository.name)
 
     def __repr__(self):
         return "<Ebuild: '{}'>".format(str(self))

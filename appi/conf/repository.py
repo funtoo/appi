@@ -25,3 +25,7 @@ class Repository(Conf):
     def get_main_repository(cls):
         cls._fetch_instances()
         return cls._main_repository
+
+    @classmethod
+    def list_locations(cls):
+        return (repo.location for repo in cls.list())

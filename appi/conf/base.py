@@ -29,7 +29,7 @@ class Conf:
                 if name == 'DEFAULT':
                     default_section = section
                     continue
-                cls._instances[name] = cls(section)
+                cls._instances[name] = cls(name, section)
         if default_section:
             cls.handle_default_section(default_section)
 
@@ -38,9 +38,27 @@ class Conf:
         pass
 
     @classmethod
-    def list(cls):
+    def list(cls, **kwargs):
         cls._fetch_instances()
-        return cls._instances
+        confs = cls._instances.values()
+        if kwargs:
+            confs = [c for c in confs if c.matches(**kwargs)]
+        return confs
+
+    @classmethod
+    def get(cls, **kwargs):
+        confs = cls.list(**kwargs)
+        if len(confs) > 1:
+            raise ValueError
+        elif not confs:
+            return None
+        return confs[0]
+
+    # @classmethod
+    # def __getitem__(cls, key):
+    #     cls._fetch_instances()
+    #     return cls._instances[key]
+    # TODO: Requires a metaclass
 
     @classmethod
     def get_conf_files(cls):
@@ -54,11 +72,19 @@ class Conf:
     def get_conf_path(cls):
         return Path(CONF_DIR, cls.conf_file)
 
-    def __init__(self, section):
+    def __init__(self, name, section):
+        self.name = name
         for name, field in self.supported_fields.items():
             field_name = field.name or name
             value = section.get(field_name, field.default)
             setattr(self, name, field.to_python(value))
+
+    def matches(self, **kwargs):
+        for k, v in kwargs.items():
+            if (k in self.supported_fields and
+                    self.supported_fields[k].to_python(v) != getattr(self, k)):
+                return False
+        return True
 
 
 class Field:
