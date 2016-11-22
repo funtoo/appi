@@ -5,7 +5,9 @@ Another Portage Python Interface
 
 The reason why I decided to create this alternative to the standard python `portage` module, is that I spent a few time trying to read and learn this API in order to be able to write portage utilities. However, I found it especially unreadable, having a complex inconsistent structure, and most of all, lacks of documentation. This made me flee each time I tried to put my nose into this module.
 
-So, after some back-and-forth, I said to myself: "Hey, it's Linux after all, if I don't like the way something is done, let's do it my way!".
+Note: I mean no offense to `portage` python module developers and former developers. I give them all due respect for maintaining such project.
+
+So, after some back-and-forth, I said to myself: "Hey, it's Linux after all, if I don't like the way something is done, let's do it *my* way!".
 
 So was born `appi`. It is still at an early stage, but I hope someday it will have enough features to enable portage-based distributions newcomers, having hard time with the `portage` api, to use it and improve it.
 
