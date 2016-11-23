@@ -59,7 +59,7 @@ We use the following version format: `M.m.p`
 - `p` is the patch version
 
 We may also package pre-releases (postfixed with `_preN`, where `N` is the pre-release version)
-and release candidates (postfixed with `_rcN`, where N is the release candidate version).
+and release candidates (postfixed with `_rcN`, where `N` is the release candidate version).
 
 **Starting from version `1.0.0`,** a major version bump means:
 
