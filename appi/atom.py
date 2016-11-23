@@ -4,6 +4,7 @@ from functools import reduce
 from pathlib import Path
 import re
 
+from .base import AppiObject
 from .base.exception import PortageError
 from .base.util.decorator import cached
 from .conf import Repository
@@ -25,7 +26,7 @@ class AtomError(PortageError):
         super().__init__(message, atom=atom, **kwargs)
 
 
-class Atom:
+class Atom(AppiObject):
     """An ebuild atom with the following properties:
 
         - package: the package name
@@ -35,7 +36,7 @@ class Atom:
         - selector: the version selector (>=, <=, <, =, > or ~)
         - ext_prefix: the extended prefix (! or !!)
         - use: the use dependency
-        - overlay: not used in this class, but in subclasses
+        - repository: not used in this class, but in subclasses
 
     See also: ebuild(5) man pages
     """
@@ -48,7 +49,7 @@ class Atom:
         ('version', r'\d+(\.\d+)*[a-z]?(_(alpha|beta|pre|rc|p)\d+)*(-r\d+)?\*?'),
         ('slot', r'\*|=|([0-9a-zA-Z_.-]+(/[0-9a-zA-Z_.-]+)?=?)'),
         ('use', r'[-!]?[a-z][a-z0-9_-]*[?=]?(,[-!]?[a-z][a-z0-9_-]*[?=]?)*'),
-        ('overlay', r'[a-zA-Z0-9_-]+'),
+        ('repository', r'[a-zA-Z0-9_-]+'),
     ]))
 
     atom_re = re.compile((
@@ -92,9 +93,6 @@ class Atom:
 
     def __str__(self):
         return self.raw_value
-
-    def __repr__(self):
-        return "<Atom: '{}'>".format(str(self))
 
     def get_version(self):
         """Return the version as Version object."""
@@ -146,5 +144,10 @@ class QueryAtom(Atom):
 
     atom_re = re.compile((
         r'^{selector}?({category}/)?{package}(-{version})?'
-        r'(:{slot})?(::{overlay})?$'
+        r'(:{slot})?(::{repository})?$'
     ).format(**Atom.patterns))
+
+    def get_repository(self):
+        if not self.repository:
+            return None
+        return Repository[self.repository]

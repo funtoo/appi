@@ -16,7 +16,7 @@ So was born `appi`. It is still at an early stage, but I hope someday it will ha
 ### Atom
 
 ```python
->>> from appi.atom import Atom
+>>> from appi import Atom
 >>> a = Atom('portage')
 Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
@@ -33,6 +33,12 @@ appi.atom.AtomError: portage may be ambiguous, please specify the category.
 <Atom: '>=sys-apps/portage-2.4.2'>
 >>> b.list_matching_ebuilds()
 {<Ebuild: 'sys-apps/portage-2.4.3-r1::gentoo'>}
+>>> # Considering a second repository named "sapher" containing qtile ebuilds
+...
+>>> Atom('=x11-wm/qtile-9999').list_matching_ebuilds()
+{<Ebuild: 'x11-wm/qtile-9999::gentoo'>, <Ebuild: 'x11-wm/qtile-9999::sapher'>}
+>>> Atom('=x11-wm/qtile-9999::sapher').list_matching_ebuilds()
+{<Ebuild: 'x11-wm/qtile-9999::sapher'>}
 ```
 
 

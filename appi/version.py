@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 import re
 
+from .base import AppiObject
 from .base.exception import PortageError
 
 __all__ = [
@@ -19,7 +20,7 @@ class VersionError(PortageError):
         super().__init__(message, version=version, **kwargs)
 
 
-class Version:
+class Version(AppiObject):
     """A package version characterized by the following properties:
 
         - base: 1.2.3
@@ -81,9 +82,6 @@ class Version:
         return '{base}{letter}{suffix}{revision}'.format(
             base=self.base, letter=self.letter or '', suffix=self.suffix or '',
             revision=('-r' + self.revision if self.revision else ''))
-
-    def __repr__(self):
-        return "<Version: '{}'>".format(str(self))
 
     def __abs__(self):
         return Version('{base}{letter}{suffix}'.format(

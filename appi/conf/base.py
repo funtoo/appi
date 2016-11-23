@@ -3,6 +3,7 @@
 from configparser import ConfigParser
 from pathlib import Path
 
+from ..base import AppiObject
 from ..base.constant import CONF_DIR
 
 __all__ = [
@@ -10,67 +11,69 @@ __all__ = [
 ]
 
 
-class Conf:
+class ConfMetaclass(type):
 
-    conf_file = None
-    supported_attributes = {}
+    def __getitem__(self, key):
+        self._fetch_instances()
+        return self._instances[key]
 
-    _instances = {}
+    def get(self, key, default=None):
+        try:
+            return self[key]
+        except KeyError:
+            return default
 
-    @classmethod
-    def _fetch_instances(cls):
-        if cls._instances:
+    def _fetch_instances(self):
+        if self._instances:
             return
         default_section = None
-        for conf_file in cls.get_conf_files():
+        for conf_file in self.get_conf_files():
             config = ConfigParser()
             config.read(str(conf_file))
             for name, section in config.items():
                 if name == 'DEFAULT':
-                    default_section = section
+                    if section:
+                        default_section = section
                     continue
-                cls._instances[name] = cls(name, section)
+                self._instances[name] = self(name, section)
         if default_section:
-            cls.handle_default_section(default_section)
+            self.handle_default_section(default_section)
 
-    @classmethod
-    def handle_default_section(cls, section):
+    def handle_default_section(self, section):
         pass
 
-    @classmethod
-    def list(cls, **kwargs):
-        cls._fetch_instances()
-        confs = cls._instances.values()
+    def list(self, **kwargs):
+        self._fetch_instances()
+        confs = self._instances.values()
         if kwargs:
             confs = [c for c in confs if c.matches(**kwargs)]
         return confs
 
-    @classmethod
-    def get(cls, **kwargs):
-        confs = cls.list(**kwargs)
+    def find(self, **kwargs):
+        confs = self.list(**kwargs)
         if len(confs) > 1:
             raise ValueError
         elif not confs:
             return None
         return confs[0]
 
-    # @classmethod
-    # def __getitem__(cls, key):
-    #     cls._fetch_instances()
-    #     return cls._instances[key]
-    # TODO: Requires a metaclass
-
-    @classmethod
-    def get_conf_files(cls):
-        path = cls.get_conf_path()
+    def get_conf_files(self):
+        path = self.get_conf_path()
         if path.is_dir():
-            return cls.get_conf_path().iterdir()
+            return self.get_conf_path().iterdir()
         else:
             return [path]
 
-    @classmethod
-    def get_conf_path(cls):
-        return Path(CONF_DIR, cls.conf_file)
+    def get_conf_path(self):
+        return Path(CONF_DIR, self.conf_file)
+
+
+class Conf(AppiObject, metaclass=ConfMetaclass):
+
+    conf_file = None
+    supported_attributes = {}
+
+    _instances = {}
 
     def __init__(self, name, section):
         self.name = name
@@ -78,6 +81,9 @@ class Conf:
             field_name = field.name or name
             value = section.get(field_name, field.default)
             setattr(self, name, field.to_python(value))
+
+    def __str__(self):
+        return self.name
 
     def matches(self, **kwargs):
         for k, v in kwargs.items():
@@ -87,12 +93,15 @@ class Conf:
         return True
 
 
-class Field:
+class Field(AppiObject):
 
     def __init__(self, name=None, **kwargs):
         self.name = name
         self.default = kwargs.get('default')
         self.required = kwargs.get('required')
+
+    def __str__(self):
+        return self.name
 
     def to_python(self, value):
         if value is None and self.required:

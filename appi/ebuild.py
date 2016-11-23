@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 import re
 
+from .base import AppiObject
 from .base.exception import PortageError
 from .conf import Repository
 from .version import Version
@@ -21,7 +22,7 @@ class EbuildError(PortageError):
         super().__init__(message, ebuild=ebuild, **kwargs)
 
 
-class Ebuild:
+class Ebuild(AppiObject):
     """An ebuild file. It defines the following properties:
 
         - category
@@ -68,7 +69,7 @@ class Ebuild:
                 path, pkg1=self.package, pkg2=package_check,
                 code='package_name_mismatch')
 
-        self.repository = Repository.get(location=repo_location)
+        self.repository = Repository.find(location=repo_location)
 
     def __str__(self):
         template = '{cat}/{pkg}-{ver}'
@@ -76,9 +77,6 @@ class Ebuild:
             template += '::{repo}'
         return template.format(cat=self.category, pkg=self.package,
                                ver=self.version, repo=self.repository.name)
-
-    def __repr__(self):
-        return "<Ebuild: '{}'>".format(str(self))
 
     def get_version(self):
         """Return the version as Version object."""
