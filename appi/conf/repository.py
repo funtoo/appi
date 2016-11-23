@@ -11,7 +11,7 @@ class Repository(Conf):
 
     conf_file = 'repos.conf'
     supported_fields = {
-        'location': PathField(),
+        'location': PathField(required=True),
     }
 
     _main_repository = None

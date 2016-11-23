@@ -126,7 +126,13 @@ class Atom(AppiObject):
     def list_matching_ebuilds(self):
         """Return the set of ebuilds matching this atom."""
         glob_pattern = self.get_glob_pattern()
-        locations = Repository.list_locations()
+        if getattr(self, 'repository', None):
+            repository = self.get_repository()
+            if not repository:
+                return set()
+            locations = [repository.location]
+        else:
+            locations = Repository.list_locations()
         paths = reduce(lambda x, y: x+y, (
             list(Path(d).glob(glob_pattern)) for d in locations))
         return {e for e in (Ebuild(p) for p in paths) if e.matches_atom(self)}
@@ -150,4 +156,4 @@ class QueryAtom(Atom):
     def get_repository(self):
         if not self.repository:
             return None
-        return Repository[self.repository]
+        return Repository.get(self.repository)

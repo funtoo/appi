@@ -98,7 +98,7 @@ class Field(AppiObject):
     def __init__(self, name=None, **kwargs):
         self.name = name
         self.default = kwargs.get('default')
-        self.required = kwargs.get('required')
+        self.required = kwargs.get('required', False)
 
     def __str__(self):
         return self.name
