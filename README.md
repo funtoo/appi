@@ -15,23 +15,25 @@ So was born `appi`. It is still at an early stage, but I hope someday it will ha
 
 ### Atom
 
-    >>> from appi.atom import Atom
-    >>> a = Atom('portage')
-    Traceback (most recent call last):
-      File "<stdin>", line 1, in <module>
-      File "/home/tony/Workspace/Funtoo/appi/appi/atom.py", line 76, in __init__
-        atom_string, code='missing_category')
-    appi.atom.AtomError: portage may be ambiguous, please specify the category.
-    >>> a = Atom('portage', strict=False)
-    >>> a.list_matching_ebuilds()
-    {<Ebuild: 'sys-apps/portage-2.4.1-r1'>, <Ebuild: 'sys-apps/portage-2.4.3-r1'>}
-    >>> a
-    <Atom: 'portage'>
-    >>> b = Atom('>=sys-apps/portage-2.4.2')
-    >>> b
-    <Atom: '>=sys-apps/portage-2.4.2'>
-    >>> b.list_matching_ebuilds()
-    {<Ebuild: 'sys-apps/portage-2.4.3-r1'>}
+```python
+>>> from appi.atom import Atom
+>>> a = Atom('portage')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/home/tony/Workspace/Funtoo/appi/appi/atom.py", line 76, in __init__
+    atom_string, code='missing_category')
+appi.atom.AtomError: portage may be ambiguous, please specify the category.
+>>> a = Atom('portage', strict=False)
+>>> a.list_matching_ebuilds()
+{<Ebuild: 'sys-apps/portage-2.4.1-r1'>, <Ebuild: 'sys-apps/portage-2.4.3-r1'>}
+>>> a
+<Atom: 'portage'>
+>>> b = Atom('>=sys-apps/portage-2.4.2')
+>>> b
+<Atom: '>=sys-apps/portage-2.4.2'>
+>>> b.list_matching_ebuilds()
+{<Ebuild: 'sys-apps/portage-2.4.3-r1'>}
+```
 
 
 ## Contributing
