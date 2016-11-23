@@ -25,14 +25,14 @@ Traceback (most recent call last):
 appi.atom.AtomError: portage may be ambiguous, please specify the category.
 >>> a = Atom('portage', strict=False)
 >>> a.list_matching_ebuilds()
-{<Ebuild: 'sys-apps/portage-2.4.1-r1'>, <Ebuild: 'sys-apps/portage-2.4.3-r1'>}
+{<Ebuild: 'sys-apps/portage-2.4.1-r1::gentoo'>, <Ebuild: 'sys-apps/portage-2.4.3-r1::gentoo'>}
 >>> a
 <Atom: 'portage'>
 >>> b = Atom('>=sys-apps/portage-2.4.2')
 >>> b
 <Atom: '>=sys-apps/portage-2.4.2'>
 >>> b.list_matching_ebuilds()
-{<Ebuild: 'sys-apps/portage-2.4.3-r1'>}
+{<Ebuild: 'sys-apps/portage-2.4.3-r1::gentoo'>}
 ```
 
 
