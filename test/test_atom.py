@@ -34,7 +34,7 @@ class TestAtomValidityMetaclass(type(TestCase)):
         return super().__new__(mcs, name, bases, attrs)
 
 
-class TestInvalidAtom(TestCase, metaclass=TestAtomValidityMetaclass):
+class TestAtomValidity(TestCase, metaclass=TestAtomValidityMetaclass):
 
     invalid_atoms = [
         ('package', True), ('=dev-lang/python', False), ('~dev-python/ipython', False),
