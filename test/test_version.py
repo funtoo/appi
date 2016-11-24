@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # Distributed under the terms of the GNU General Public License v2
-import unittest
+from unittest import TestCase
 
 from appi.version import Version, VersionError
 
 
-class TestVersionComparisonMetaclass(type(unittest.TestCase)):
+class TestVersionComparisonMetaclass(type(TestCase)):
 
     @staticmethod
     def test_func_wrapper(v1, v2, i1, i2, comp_method):
@@ -28,7 +28,7 @@ class TestVersionComparisonMetaclass(type(unittest.TestCase)):
         return super().__new__(mcs, name, bases, attrs)
 
 
-class TestVersionComparison(unittest.TestCase, metaclass=TestVersionComparisonMetaclass):
+class TestVersionComparison(TestCase, metaclass=TestVersionComparisonMetaclass):
 
     ordered_versions = [
         '0_rc0', '0', '0.0', '0.0.0', '0.0.0-r1', '0.1.0', '0.1.0.3', '0.1.3',
@@ -49,7 +49,7 @@ class TestVersionComparison(unittest.TestCase, metaclass=TestVersionComparisonMe
         self.assertEqual(Version('5.0_p005'), Version('5.00_p5'))
 
 
-class TestInvalidVersionMetaclass(type(unittest.TestCase)):
+class TestInvalidVersionMetaclass(type(TestCase)):
 
     @staticmethod
     def test_func_wrapper(version):
@@ -67,7 +67,7 @@ class TestInvalidVersionMetaclass(type(unittest.TestCase)):
         return super().__new__(mcs, name, bases, attrs)
 
 
-class TestInvalidVersion(unittest.TestCase, metaclass=TestInvalidVersionMetaclass):
+class TestInvalidVersion(TestCase, metaclass=TestInvalidVersionMetaclass):
 
     invalid_versions = [
         '1-15', '2.15-12', '3_15', '3.14.bonjour', 'pi', '1-sid', 'funtoo3',

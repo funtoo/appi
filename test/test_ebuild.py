@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 # Distributed under the terms of the GNU General Public License v2
-import unittest
+from unittest import TestCase
 
 from appi.atom import Atom
 from appi.ebuild import Ebuild, EbuildError
 from appi.version import Version
 
 
-class TestInvalidEbuildMetaclass(type(unittest.TestCase)):
+class TestInvalidEbuildMetaclass(type(TestCase)):
 
     @staticmethod
     def test_func_wrapper(ebuild):
@@ -25,7 +25,7 @@ class TestInvalidEbuildMetaclass(type(unittest.TestCase)):
         return super().__new__(mcs, name, bases, attrs)
 
 
-class TestInvalidEbuild(unittest.TestCase, metaclass=TestInvalidEbuildMetaclass):
+class TestInvalidEbuild(TestCase, metaclass=TestInvalidEbuildMetaclass):
 
     invalid_ebuilds = [
         'ebuild', 'path/to/ebuild', '/path/to/ebuild', 'path/to/toto.ebuild',
@@ -37,7 +37,7 @@ class TestInvalidEbuild(unittest.TestCase, metaclass=TestInvalidEbuildMetaclass)
     ]
 
 
-class TestGetVersionMetaclass(type(unittest.TestCase)):
+class TestGetVersionMetaclass(type(TestCase)):
 
     @staticmethod
     def test_func_wrapper(e, v):
@@ -56,7 +56,7 @@ class TestGetVersionMetaclass(type(unittest.TestCase)):
         return super().__new__(mcs, name, bases, attrs)
 
 
-class TestGetVersion(unittest.TestCase, metaclass=TestGetVersionMetaclass):
+class TestGetVersion(TestCase, metaclass=TestGetVersionMetaclass):
 
     ebuild_to_version = [
         ('cat/pkg/pkg-0.12.3.ebuild', '0.12.3'),
@@ -66,7 +66,7 @@ class TestGetVersion(unittest.TestCase, metaclass=TestGetVersionMetaclass):
     ]
 
 
-class TestMatchesAtomMetaclass(type(unittest.TestCase)):
+class TestMatchesAtomMetaclass(type(TestCase)):
 
     @staticmethod
     def test_func_wrapper(e, a, assert_what):
@@ -92,7 +92,7 @@ class TestMatchesAtomMetaclass(type(unittest.TestCase)):
         return super().__new__(mcs, name, bases, attrs)
 
 
-class TestMatchesAtom(unittest.TestCase, metaclass=TestMatchesAtomMetaclass):
+class TestMatchesAtom(TestCase, metaclass=TestMatchesAtomMetaclass):
 
     matches = [
         ('cat/pkg/pkg-0.1.0_pre0-r1.ebuild', [

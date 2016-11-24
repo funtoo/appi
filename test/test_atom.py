@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # Distributed under the terms of the GNU General Public License v2
-import unittest
+from unittest import TestCase
 
 from appi.atom import Atom, AtomError
 
 
-class TestAtomValidityMetaclass(type(unittest.TestCase)):
+class TestAtomValidityMetaclass(type(TestCase)):
 
     @staticmethod
     def invalid_test_func_wrapper(atom, strict):
@@ -34,7 +34,7 @@ class TestAtomValidityMetaclass(type(unittest.TestCase)):
         return super().__new__(mcs, name, bases, attrs)
 
 
-class TestInvalidAtom(unittest.TestCase, metaclass=TestAtomValidityMetaclass):
+class TestInvalidAtom(TestCase, metaclass=TestAtomValidityMetaclass):
 
     invalid_atoms = [
         ('package', True), ('=dev-lang/python', False), ('~dev-python/ipython', False),
