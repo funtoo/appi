@@ -101,7 +101,7 @@ class Ebuild(AppiObject):
             if atom.version[-1] == '*':
                 selector = '^'
             elif selector == '~':
-                v1 = abs(v1)
+                v1 = v1.get_upstream_version()
                 selector = '='
             comp_method = Version.selector_to_comp_method[selector]
             if not getattr(v1, comp_method)(v2):

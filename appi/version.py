@@ -83,11 +83,6 @@ class Version(AppiObject):
             base=self.base, letter=self.letter or '', suffix=self.suffix or '',
             revision=('-r' + self.revision if self.revision else ''))
 
-    def __abs__(self):
-        return Version('{base}{letter}{suffix}'.format(
-            base=self.base, letter=self.letter or '',
-            suffix=self.suffix or ''))
-
     def __gt__(self, other):
         return self.compare(other) > 0
 
@@ -146,4 +141,13 @@ class Version(AppiObject):
         return self.version_tuple_compare(self_tuple, other_tuple)
 
     def startswith(self, version):
+        # FIXME This is wrong because '1.23*' should not match '1.234'
+        # Should probably check "version tuple starts with" but dunno how to
+        # do it properly for now
         return str(self).startswith(str(version))
+
+    def get_upstream_version(self):
+        """Return the version without the ebuild's revision part."""
+        return Version('{base}{letter}{suffix}'.format(
+            base=self.base, letter=self.letter or '',
+            suffix=self.suffix or ''))

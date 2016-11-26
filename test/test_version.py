@@ -5,6 +5,14 @@ from unittest import TestCase
 from appi.version import Version, VersionError
 
 
+class TestVersionValidityMetaclass(type(TestCase)):
+    pass
+
+
+class TestVersionValidity(TestCase, metaclass=TestVersionValidityMetaclass):
+    pass
+
+
 class TestVersionComparisonMetaclass(type(TestCase)):
 
     @staticmethod
@@ -73,3 +81,31 @@ class TestInvalidVersion(TestCase, metaclass=TestInvalidVersionMetaclass):
         '1-15', '2.15-12', '3_15', '3.14.bonjour', 'pi', '1-sid', 'funtoo3',
         '1.0z_gamma3', '2.76_beta', '2.76_beta-1', '3.141-rc', '123-r1_pre3',
     ]
+
+
+class TestGetVersionTuple(TestCase):
+    pass
+
+
+class TestGetBaseTuple(TestCase):
+    pass
+
+
+class TestGetLetterTuple(TestCase):
+    pass
+
+
+class TestGetSuffixTuple(TestCase):
+    pass
+
+
+class TestGetRevisionTuple(TestCase):
+    pass
+
+
+class TestStartswith(TestCase):
+    pass
+
+
+class TestGetUpstreamVersion(TestCase):
+    pass
