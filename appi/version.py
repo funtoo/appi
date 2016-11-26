@@ -141,10 +141,16 @@ class Version(AppiObject):
         return self.version_tuple_compare(self_tuple, other_tuple)
 
     def startswith(self, version):
-        # FIXME This is wrong because '1.23*' should not match '1.234'
-        # Should probably check "version tuple starts with" but dunno how to
-        # do it properly for now
-        return str(self).startswith(str(version))
+        """Return True if this version starts with the given other version.
+        May raise VersionError if `version` is not a valid version.
+        """
+        if not isinstance(version, Version):
+            # Make sure that 'version' is valid, otherwise this method would
+            # return unexpected results.
+            version = Version(version)
+        v1, v2 = str(self), str(version)
+        return v1.startswith(v2) and (
+            len(v1) == len(v2) or v1[len(v2):][0] not in '123456789')
 
     def get_upstream_version(self):
         """Return the version without the ebuild's revision part."""

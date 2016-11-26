@@ -103,8 +103,65 @@ class TestGetRevisionTuple(TestCase):
     pass
 
 
-class TestStartswith(TestCase):
-    pass
+class TestStartswithMetaclass(type(TestCase)):
+
+    @staticmethod
+    def test_func_wrapper(v1, v2, expect):
+        def test_func(self):
+            result = Version(v1).startswith(Version(v2))
+            if expect:
+                self.assertTrue(result)
+            else:
+                self.assertFalse(result)
+        return test_func
+
+    def __new__(mcs, name, bases, attrs):
+        for v1, v2 in attrs['expect_true']:
+            func_name = 'test_{}_startswith_{}_is_true'.format(v1, v2)
+            test_func = mcs.test_func_wrapper(v1, v2, True)
+            test_func.__name__ = func_name
+            attrs[func_name] = test_func
+        for v1, v2 in attrs['expect_false']:
+            func_name = 'test_{}_startswith_{}_is_false'.format(v1, v2)
+            test_func = mcs.test_func_wrapper(v1, v2, False)
+            test_func.__name__ = func_name
+            attrs[func_name] = test_func
+        return super().__new__(mcs, name, bases, attrs)
+
+
+class TestStartswith(TestCase, metaclass=TestStartswithMetaclass):
+
+    expect_true = [
+        ('12.34.5-r2', '12'),
+        ('12.34.5-r2', '12.34'),
+        ('12.34.5-r2', '12.34.5'),
+        ('12.34.5-r2', '12.34.5-r2'),
+        ('1.2.3d_beta5_p6_rc7', '1.2.3'),
+        ('1.2.3d_beta5_p6_rc7', '1.2.3d'),
+        ('1.2.3d_beta5_p6_rc7', '1.2.3d_beta5'),
+        ('1.2.3d_beta5_p6_rc7', '1.2.3d_beta5_p6'),
+        ('1.2.3d_beta5_p6_rc7', '1.2.3d_beta5_p6_rc7'),
+    ]
+    expect_false = [
+        ('12.34.5-r2', '12.34.5-r23'),
+        ('12.34.5-r2', '12.3'),
+        ('12.34.5-r2', '12.34.5-r6'),
+        ('12.34.5-r2', '34.5-r2'),
+        ('1.2.3d_beta5_p6_rc7', '1.2.3_beta5'),
+        ('1.2.3d_beta5_p6_rc7', '1.2.3_beta5_p6_rc7'),
+        ('1.2.3d_beta5_p6_rc7', '1.2.3d_p6_beta5_rc7'),
+        ('1.2.3d_beta5_p6_rc7', '1.2.3d_p6_beta5'),
+        ('1.2.3d_beta5_p6_rc7', '1.2.3d_rc7'),
+    ]
+
+    def test_invalid_version_number(self):
+        version = Version('3.14.1')
+        with self.assertRaises(VersionError):
+            version.startswith('3.14.')
+
+    def test_valid_version_number(self):
+        version = Version('3.14.1')
+        version.startswith('3.14')
 
 
 class TestGetUpstreamVersion(TestCase):
