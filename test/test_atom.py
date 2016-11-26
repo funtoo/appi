@@ -94,7 +94,7 @@ class TestGetVersionGlobPatternMetaclass(type(TestCase)):
     def test_func_wrapper(a, expected):
         def test_func(self):
             atom = Atom(a, False)
-            self.assertEquals(atom.get_version_glob_pattern(), expected)
+            self.assertEqual(atom.get_version_glob_pattern(), expected)
         return test_func
 
     def __new__(mcs, name, bases, attrs):
@@ -127,7 +127,7 @@ class TestGetGlobPatternMetaclass(type(TestCase)):
     def test_func_wrapper(a, expected):
         def test_func(self):
             atom = Atom(a, False)
-            self.assertEquals(atom.get_glob_pattern(), expected)
+            self.assertEqual(atom.get_glob_pattern(), expected)
         return test_func
 
     def __new__(mcs, name, bases, attrs):
