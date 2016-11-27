@@ -3,7 +3,7 @@
 from pathlib import Path
 from unittest import TestCase
 
-from appi.atom import Atom
+from appi.atom import DependAtom
 from appi.ebuild import Ebuild, EbuildError
 from appi.version import Version
 
@@ -134,7 +134,7 @@ class TestMatchesAtomMetaclass(type(TestCase)):
     def test_func_wrapper(e, a, assert_what):
         def test_func(self):
             ebuild = Ebuild(e)
-            atom = Atom(a, strict=False)
+            atom = DependAtom(a, strict=False)
             getattr(self, 'assert' + assert_what)(ebuild.matches_atom(atom))
         return test_func
 

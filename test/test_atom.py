@@ -2,23 +2,23 @@
 # Distributed under the terms of the GNU General Public License v2
 from unittest import TestCase
 
-from appi.atom import Atom, QueryAtom, AtomError
+from appi.atom import DependAtom, QueryAtom, AtomError
 from appi.version import Version
 
 
-class TestAtomValidityMetaclass(type(TestCase)):
+class TestDependAtomValidityMetaclass(type(TestCase)):
 
     @staticmethod
     def invalid_test_func_wrapper(atom, strict):
         def test_func(self):
             with self.assertRaises(AtomError):
-                Atom(atom, strict)
+                DependAtom(atom, strict)
         return test_func
 
     @staticmethod
     def valid_test_func_wrapper(atom, strict):
         def test_func(self):
-            Atom(atom, strict)
+            DependAtom(atom, strict)
         return test_func
 
     def __new__(mcs, name, bases, attrs):
@@ -35,7 +35,7 @@ class TestAtomValidityMetaclass(type(TestCase)):
         return super().__new__(mcs, name, bases, attrs)
 
 
-class TestAtomValidity(TestCase, metaclass=TestAtomValidityMetaclass):
+class TestDependAtomValidity(TestCase, metaclass=TestDependAtomValidityMetaclass):
 
     invalid_atoms = [
         ('package', True), ('=dev-lang/python', False), ('~dev-python/ipython', False),
@@ -54,7 +54,7 @@ class TestGetVersionMetaclass(type(TestCase)):
     @staticmethod
     def test_func_wrapper(a, v):
         def test_func(self):
-            atom = Atom(a)
+            atom = DependAtom(a)
             if v is None:
                 self.assertIsNone(atom.get_version())
             else:
@@ -93,7 +93,7 @@ class TestGetVersionGlobPatternMetaclass(type(TestCase)):
     @staticmethod
     def test_func_wrapper(a, expected):
         def test_func(self):
-            atom = Atom(a, False)
+            atom = DependAtom(a, False)
             self.assertEqual(atom.get_version_glob_pattern(), expected)
         return test_func
 
@@ -126,7 +126,7 @@ class TestGetGlobPatternMetaclass(type(TestCase)):
     @staticmethod
     def test_func_wrapper(a, expected):
         def test_func(self):
-            atom = Atom(a, False)
+            atom = DependAtom(a, False)
             self.assertEqual(atom.get_glob_pattern(), expected)
         return test_func
 
@@ -168,7 +168,7 @@ class TestQueryAtomValidityMetaclass(type(TestCase)):
     def invalid_test_func_wrapper(atom, strict):
         def test_func(self):
             with self.assertRaises(AtomError):
-                Atom(atom, strict)
+                QueryAtom(atom, strict)
         return test_func
 
     @staticmethod

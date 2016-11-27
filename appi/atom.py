@@ -12,7 +12,7 @@ from .ebuild import Ebuild
 from .version import Version
 
 __all__ = [
-    'Atom', 'QueryAtom', 'AtomError',
+    'DependAtom', 'QueryAtom', 'AtomError',
 ]
 
 
@@ -29,6 +29,10 @@ class AtomError(PortageError):
 class AtomMetaclass(type(AppiObject)):
 
     def __new__(mcs, name, bases, attrs):
+        parents = [b for b in bases if isinstance(b, AtomMetaclass)]
+        if not parents:
+            return super().__new__(mcs, name, bases, attrs)
+
         new_cls = super().__new__(mcs, name, bases, attrs)
         patterns = dict(map(
             lambda x: (x.name, '(?P<{}>{})'.format(x.name, x.get_regex())),
@@ -38,12 +42,7 @@ class AtomMetaclass(type(AppiObject)):
         return new_cls
 
 
-class Atom(AppiObject, metaclass=AtomMetaclass):
-    """A "depend atom" used in ebuilds.
-
-    See:
-        - ebuild(5) man pages
-    """
+class BaseAtom(AppiObject, metaclass=AtomMetaclass):
 
     package = Attribute(
         description="The package name",
@@ -70,19 +69,6 @@ class Atom(AppiObject, metaclass=AtomMetaclass):
         description="The version selector",
         choices=['<', '<=', '=', '>=', '>', '~'],
     )
-    ext_prefix = Attribute(
-        description="The extended prefix",
-        choices=['!', '!!'],
-    )
-    use = Attribute(
-        description="The USE dependencies",
-        regex=r'[a-zA-Z0-9+_-]+?',
-        examples=['appi', 'portage', 'python'],
-    )
-
-    atom_re = (
-        r'^{ext_prefix}?{selector}?({category}/)?{package}'
-        r'(-{version})?(:{slot})?(\[{use}\])?$')
 
     def __init__(self, atom_string, strict=True):
         """Create an Atom object from a raw atom string.
@@ -172,14 +158,29 @@ class Atom(AppiObject, metaclass=AtomMetaclass):
         return bool(self.list_matching_ebuilds())
 
 
-class QueryAtom(Atom):
+class DependAtom(BaseAtom):
+    """An atom used in ebuild dependencies."""
+
+    ext_prefix = Attribute(
+        description="The extended prefix",
+        choices=['!', '!!'],
+    )
+    use = Attribute(
+        description="The USE dependencies",
+        regex=r'[a-zA-Z0-9+_-]+?',
+        examples=['appi', 'portage', 'python'],
+    )
+
+    atom_re = (r'^{ext_prefix}?{selector}?({category}/)?{package}'
+               r'(-{version})?(:{slot})?(\[{use}\])?$')
+
+
+class QueryAtom(BaseAtom):
     """An atom used for querying an ebuild.
+
     This kind of atom doesn't accept extended prefix and use dependencies, but
     accepts an overlay restriction.
     """
-
-    class Meta:
-        exclude = ['ext_prefix', 'use']
 
     repository = Attribute(
         description="The repository to fetch ebuilds",
@@ -187,9 +188,8 @@ class QueryAtom(Atom):
         examples=['gentoo', 'sapher', 'sabayon'],
     )
 
-    atom_re = (
-        r'^{selector}?({category}/)?{package}(-{version})?'
-        r'(:{slot})?(::{repository})?$')
+    atom_re = (r'^{selector}?({category}/)?{package}(-{version})?'
+               r'(:{slot})?(::{repository})?$')
 
     def get_repository(self) -> Repository:
         if not self.repository:
