@@ -3,3 +3,5 @@
 *~
 *.log
 *.mo
+
+/docs/_build/
