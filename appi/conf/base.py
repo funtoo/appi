@@ -11,7 +11,7 @@ __all__ = [
 ]
 
 
-class ConfMetaclass(type):
+class ConfMetaclass(type(AppiObject)):
 
     def __getitem__(self, key):
         self._fetch_instances()
