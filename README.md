@@ -1,6 +1,8 @@
 # appi
 Another Portage Python Interface
 
+[![Documentation Status](https://readthedocs.org/projects/appi/badge/?version=latest)][1]
+
 
 ## Why not `portage`?
 
@@ -93,7 +95,7 @@ major version bump. However:
 
 If you would like to contribute, I'd be glad to merge your pull requests.
 
-You should however stick to the [PEP8 Style Guide][1]. A text width of 79 characters
+You should however stick to the [PEP8 Style Guide][2]. A text width of 79 characters
 is recommended. However, you are allowed to go up to 99 characters per line *if* you
 need some extra space for readability concerns.
 
@@ -129,5 +131,5 @@ So even if you only add an attribute an object, please create a new issue.
 
 ### Improving test cases
 
-
-[1]: https://www.python.org/dev/peps/pep-0008/
+[1]: http://appi.readthedocs.io/en/latest/?badge=latest
+[2]: https://www.python.org/dev/peps/pep-0008/
