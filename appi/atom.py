@@ -45,29 +45,33 @@ class AtomMetaclass(type(AppiObject)):
 class BaseAtom(AppiObject, metaclass=AtomMetaclass):
 
     package = Attribute(
-        description="The package name",
-        required=True,
+        help="The package name",
         regex=r'[a-zA-Z0-9+_-]+?',
         examples=['appi', 'portage', 'python'],
     )
     category = Attribute(
-        description="The category name",
+        help="The category name",
         regex=r'[a-z0-9]+(-[a-z0-9]+)?',
         examples=['dev-python', 'sys-apps', 'dev-lang'],
     )
     version = Attribute(
-        description="The version number",
-        regex=r'\d+(\.\d+)*[a-z]?(_(alpha|beta|pre|rc|p)\d+)*(-r\d+)?\*?',
+        help="The version number",
+        regex=r'\d+(\.\d+)*[a-z]?(_(alpha|beta|pre|rc|p)\d+)*(-r\d+)?',
         examples=['0.1.0', '2.4.3-r1', '3.4.5'],
+        type=Version,
     )
     slot = Attribute(
-        description="The slot, subslot and slot operator",
+        help="The slot, subslot and slot operator",
         regex=r'\*|=|([0-9a-zA-Z_.-]+(/[0-9a-zA-Z_.-]+)?=?)',
         examples=['0=', '4.8.10', '3.4/3.4m'],
     )
     selector = Attribute(
-        description="The version selector",
+        help="The version selector",
         choices=['<', '<=', '=', '>=', '>', '~'],
+    )
+    postfix = Attribute(
+        help="The version postfix",
+        choices=['*'],
     )
 
     def __init__(self, atom_string, strict=True):
@@ -99,7 +103,7 @@ class BaseAtom(AppiObject, metaclass=AtomMetaclass):
             raise AtomError(
                 "{atom} is invalid, you can't give a revision number with "
                 "the '~' selector.", atom_string, code='unexpected_revision')
-        if self.version and self.version[-1] == '*' and self.selector != '=':
+        if self.version and self.postfix == '*' and self.selector != '=':
             raise AtomError(
                 "{atom} is invalid, '*' postfix can only be used with "
                 "the '=' selector.", atom_string, code='unexpected_postfix')
@@ -110,19 +114,10 @@ class BaseAtom(AppiObject, metaclass=AtomMetaclass):
     def __str__(self):
         return self.raw_value
 
-    def get_version(self) -> Version:
-        """Return the version as Version object."""
-        version = self.version
-        if not version:
-            return None
-        if version[-1] == '*':
-            version = version[:-1]
-        return Version(version)
-
     def get_version_glob_pattern(self) -> str:
         if not self.version or self.selector in ['>=', '>', '<', '<=']:
             return '*'
-        if self.selector == '~':
+        if self.selector == '~' or self.postfix == '*':
             return self.version + '*'
         return self.version
 
@@ -161,7 +156,7 @@ class BaseAtom(AppiObject, metaclass=AtomMetaclass):
 class DependAtom(BaseAtom):
     """An atom used in ebuild dependencies."""
 
-    ext_prefix = Attribute(
+    prefix = Attribute(
         description="The extended prefix",
         choices=['!', '!!'],
     )
@@ -171,8 +166,8 @@ class DependAtom(BaseAtom):
         examples=['appi', 'portage', 'python'],
     )
 
-    atom_re = (r'^{ext_prefix}?{selector}?({category}/)?{package}'
-               r'(-{version})?(:{slot})?(\[{use}\])?$')
+    atom_re = (r'^{prefix}?{selector}?({category}/)?{package}'
+               r'(-{version}{postfix}?)?(:{slot})?(\[{use}\])?$')
 
 
 class QueryAtom(BaseAtom):
@@ -188,10 +183,5 @@ class QueryAtom(BaseAtom):
         examples=['gentoo', 'sapher', 'sabayon'],
     )
 
-    atom_re = (r'^{selector}?({category}/)?{package}(-{version})?'
-               r'(:{slot})?(::{repository})?$')
-
-    def get_repository(self) -> Repository:
-        if not self.repository:
-            return None
-        return Repository.get(self.repository)
+    atom_re = (r'^{selector}?({category}/)?{package}'
+               r'(-{version}{postfix}?)?(:{slot})?(::{repository})?$')

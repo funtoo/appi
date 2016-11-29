@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Distributed under the terms of the GNU General Public License v2
+from ..base import Attribute
 from .base import Conf, PathField
 
 __all__ = [
-    'Repository',
+    'Repository', 'RepositoryAttribute',
 ]
 
 
@@ -29,3 +30,9 @@ class Repository(Conf):
     @classmethod
     def list_locations(cls):
         return (repo.location for repo in cls.list())
+
+
+class RepositoryAttribute(Attribute):
+
+    def to_python(self, value):
+        return Repository.find(location=value)
