@@ -34,26 +34,30 @@ class Meta:
 
 
 class AppiObjectMetaclass(type):
-    # TODO This would deserve some clarification and comments
+    # TODO This would deservere some clarification and comments
 
     def __new__(mcs, name, bases, attrs):
         parents = [b for b in bases if isinstance(b, AppiObjectMetaclass)]
         if not parents:
             return super().__new__(mcs, name, bases, attrs)
 
-        new_cls = super().__new__(mcs, name, bases, attrs)
+        new_class = super().__new__(mcs, name, bases, attrs)
+        meta = attrs.pop('Meta', None) or getattr(new_class, 'Meta', None)
 
+        exclude = getattr(meta, 'exclude', [])
         attributes = reduce(operator.add, [
             p._meta.attributes for p in parents if hasattr(p, '_meta')], [])
 
         for attr, value in attrs.items():
-            if isinstance(value, Attribute):
+            if isinstance(value, Attribute) and attr not in exclude:
                 value.name = attr
                 attributes.append(value)
 
-        new_cls._meta = Meta(attributes=attributes)
+        new_class._meta = Meta(
+            attributes=[a for a in attributes if a.name not in exclude],
+        )
 
-        return new_cls
+        return new_class
 
 
 class AppiObject(metaclass=AppiObjectMetaclass):
