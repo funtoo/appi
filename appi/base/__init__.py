@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # Distributed under the terms of the GNU General Public License v2
-from collections import OrderedDict
 from functools import reduce
 import operator
 import re
@@ -19,7 +18,6 @@ class Attribute:
         self.required = kwargs.get('required', False)
         self.regex = kwargs.get('regex')
         self.choices = kwargs.get('choices')
-        self.type = kwargs.get('type')
 
     def get_regex(self):
         if self.regex:
@@ -28,17 +26,11 @@ class Attribute:
             return '|'.join(map(re.escape, self.choices))
         return None
 
-    def to_python(self, value):
-        if self.type and value is not None:
-            return self.type(value)
-        else:
-            return value
-
 
 class Meta:
 
     def __init__(self, **kwargs):
-        self.attributes = kwargs.get('attributes', OrderedDict())
+        self.attributes = kwargs.get('attributes', [])
 
 
 class AppiObjectMetaclass(type):
@@ -57,7 +49,7 @@ class AppiObjectMetaclass(type):
         for attr, value in attrs.items():
             if isinstance(value, Attribute):
                 value.name = attr
-                attributes[attr] = value
+                attributes.append(value)
 
         new_cls._meta = Meta(attributes=attributes)
 
@@ -73,7 +65,3 @@ class AppiObject(metaclass=AppiObjectMetaclass):
         # Avoid infinite recursion if the class does not define an __str__
         # method since the default implementation is to call __repr__.
         return "an instance has no name"
-
-    def __init__(self, **kwargs):
-        for k, v in kwargs.item():
-            if 

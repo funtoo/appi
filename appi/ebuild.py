@@ -2,10 +2,10 @@
 # Distributed under the terms of the GNU General Public License v2
 import re
 
-from .base import AppiObject, Attribute
+from .base import AppiObject
 from .base.exception import PortageError
-from .conf import Repository, RepositoryAttribute
-from .version import Version, VersionAttribute
+from .conf import Repository
+from .version import Version
 
 __all__ = [
     'Ebuild', 'EbuildError',
@@ -39,27 +39,6 @@ class Ebuild(AppiObject):
         - description
         - ...
     """
-
-    repository = RepositoryAttribute(
-        help="The repository the ebuild belongs to",
-        regex=r'/.*/',
-        examples=["<Repository: 'gentoo'>", "<Repository: 'sapher'>"],
-    )
-    category = Attribute(
-        help="The category name",
-        regex=r'[a-z0-9]+(-[a-z0-9]+)?',
-        examples=['dev-python', 'sys-apps', 'dev-lang'],
-    )
-    package = Attribute(
-        help="The package name",
-        regex=r'[a-zA-Z0-9+_-]+?',
-        examples=['appi', 'portage', 'python'],
-    )
-    version = VersionAttribute(
-        help="The version number",
-        regex=r'\d+(\.\d+)*[a-z]?(_(alpha|beta|pre|rc|p)\d+)*(-r\d+)?\*?',
-        examples=['0.1.0', '2.4.3-r1', '3.4.5'],
-    )
 
     path_re = re.compile(
         r'^(?P<repo_location>/.*/)'
