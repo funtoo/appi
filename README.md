@@ -1,7 +1,7 @@
 # appi
 Another Portage Python Interface
 
-[![Documentation Status](https://readthedocs.org/projects/appi/badge/?version=latest)][1]
+[![Documentation Status](https://readthedocs.org/projects/appi/badge/?version=0.0)][1]
 
 
 ## Why not `portage`?
@@ -131,5 +131,5 @@ So even if you only add an attribute an object, please create a new issue.
 
 ### Improving test cases
 
-[1]: http://appi.readthedocs.io/en/latest/?badge=latest
+[1]: http://appi.readthedocs.io/en/0.0/?badge=0.0
 [2]: https://www.python.org/dev/peps/pep-0008/

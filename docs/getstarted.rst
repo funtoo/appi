@@ -144,7 +144,7 @@ Go on with ebuilds
 An ``appi.Ebuild`` instance represents the file describing a given version of a given
 package.
 
-Check ebuilds validity
+Check ebuild validity
 ----------------------
 
 Just as with atoms, you can check the validity of an ebuild by instantiating it.
