@@ -1,6 +1,6 @@
-===============
-Installing appi
-===============
+============
+Install appi
+============
 
 
 Installation from portage tree
