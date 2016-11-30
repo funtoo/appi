@@ -115,7 +115,7 @@ Inspect atom parts
 And much more!
 --------------
 
-Now, would you like to get the list of ebuilds that satisfy this ebuild? Nothing's easier!
+Now, would you like to get the list of ebuilds that satisfy this atom? Nothing's easier!
 
 .. code-block:: python
 
