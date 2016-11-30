@@ -12,7 +12,7 @@ from .ebuild import Ebuild
 from .version import Version
 
 __all__ = [
-    'Atom', 'QueryAtom', 'AtomError',
+    'DependAtom', 'QueryAtom', 'AtomError',
 ]
 
 
@@ -26,7 +26,7 @@ class AtomError(PortageError):
         super().__init__(message, atom=atom, **kwargs)
 
 
-class Atom(AppiObject):
+class BaseAtom(AppiObject):
     """An ebuild atom with the following properties:
 
         - package: the package name
@@ -34,28 +34,23 @@ class Atom(AppiObject):
         - version: the version number
         - slot: the slot, subslot and slot operator
         - selector: the version selector (>=, <=, <, =, > or ~)
-        - ext_prefix: the extended prefix (! or !!)
+        - prefix: the extended prefix (! or !!)
+        - postfix: the extended postfix (*)
         - use: the use dependency
         - repository: not used in this class, but in subclasses
-
-    See also: ebuild(5) man pages
     """
 
     patterns = dict(map(lambda x: (x[0], '(?P<{}>{})'.format(x[0], x[1])), [
-        ('ext_prefix', r'!!?'),
+        ('prefix', r'!!?'),
         ('selector', r'>=|<=|<|=|>|~'),
         ('category', r'[a-z0-9]+(-[a-z0-9]+)?'),
         ('package', r'[a-zA-Z0-9+_-]+?'),
-        ('version', r'\d+(\.\d+)*[a-z]?(_(alpha|beta|pre|rc|p)\d+)*(-r\d+)?\*?'),
+        ('version', r'\d+(\.\d+)*[a-z]?(_(alpha|beta|pre|rc|p)\d+)*(-r\d+)?'),
+        ('postfix', r'\*'),
         ('slot', r'\*|=|([0-9a-zA-Z_.-]+(/[0-9a-zA-Z_.-]+)?=?)'),
         ('use', r'[-!]?[a-z][a-z0-9_-]*[?=]?(,[-!]?[a-z][a-z0-9_-]*[?=]?)*'),
         ('repository', r'[a-zA-Z0-9_-]+'),
     ]))
-
-    atom_re = re.compile((
-        r'^{ext_prefix}?{selector}?({category}/)?{package}'
-        r'(-{version})?(:{slot})?(\[{use}\])?$'
-    ).format(**patterns))
 
     def __init__(self, atom_string, strict=True):
         """Create an Atom object from a raw atom string.
@@ -86,7 +81,7 @@ class Atom(AppiObject):
             raise AtomError(
                 "{atom} is invalid, you can't give a revision number with "
                 "the '~' selector.", atom_string, code='unexpected_revision')
-        if self.version and self.version[-1] == '*' and self.selector != '=':
+        if self.version and self.postfix == '*' and self.selector != '=':
             raise AtomError(
                 "{atom} is invalid, '*' postfix can only be used with "
                 "the '=' selector.", atom_string, code='unexpected_postfix')
@@ -99,14 +94,12 @@ class Atom(AppiObject):
         version = self.version
         if not version:
             return None
-        if version[-1] == '*':
-            version = version[:-1]
         return Version(version)
 
     def get_version_glob_pattern(self):
         if not self.version or self.selector in ['>=', '>', '<', '<=']:
             return '*'
-        if self.selector == '~':
+        if self.selector == '~' or self.postfix == '*':
             return self.version + '*'
         return self.version
 
@@ -142,16 +135,22 @@ class Atom(AppiObject):
         return bool(self.list_matching_ebuilds())
 
 
-class QueryAtom(Atom):
-    """An atom used for querying an ebuild.
-    This kind of atom doesn't accept extended prefix and use dependencies, but
-    accepts an overlay restriction.
-    """
+class DependAtom(BaseAtom):
+    """An atom used in ebuild dependencies."""
 
     atom_re = re.compile((
-        r'^{selector}?({category}/)?{package}(-{version})?'
+        r'^{prefix}?{selector}?({category}/)?{package}(-{version}{postfix}?)?'
+        r'(:{slot})?(\[{use}\])?$'
+    ).format(**BaseAtom.patterns))
+
+
+class QueryAtom(BaseAtom):
+    """An atom used for querying an ebuild."""
+
+    atom_re = re.compile((
+        r'^{selector}?({category}/)?{package}(-{version}{postfix}?)?'
         r'(:{slot})?(::{repository})?$'
-    ).format(**Atom.patterns))
+    ).format(**BaseAtom.patterns))
 
     def get_repository(self):
         if not self.repository:

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from .atom import Atom, QueryAtom
+from .atom import DependAtom, QueryAtom
 from .ebuild import Ebuild
 from .version import Version
 
 __all__ = [
-    'Atom', 'Ebuild', 'QueryAtom', 'Version',
+    'DependAtom', 'Ebuild', 'QueryAtom', 'Version',
 ]

@@ -98,9 +98,9 @@ class Ebuild(AppiObject):
             v1 = self.get_version()
             v2 = atom.get_version()
             selector = atom.selector
-            if atom.version[-1] == '*':
+            if atom.postfix == '*':
                 selector = '^'
-            elif selector == '~':
+            if selector == '~':
                 v1 = v1.get_upstream_version()
                 selector = '='
             comp_method = Version.selector_to_comp_method[selector]
