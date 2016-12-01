@@ -175,7 +175,98 @@ Just as with atoms, you can check the validity of an ebuild by instantiating it.
     >>>
 
 .. warning:: Note that currently, valid paths to unexisting files are considered valid
-             ebuilds. This behavior will very likely be changed from version ``0.1`` as
+             ebuilds. This behavior is very likely be chang as of version ``0.1`` since
              reading the ebuild file will be needed to extract some information such as
              slots and useflags. Thus, the ``Ebuild`` constructor may also raise
              ``OSError`` exceptions such as ``FileNotFoundError`` in future versions.
+
+
+Inspect ebuild parts
+--------------------
+
+.. code-block:: python
+
+    >>> e = appi.Ebuild('/usr/portage/sci-libs/gdal/gdal-2.0.2-r2.ebuild')
+    >>> e.category
+    'sci-libs'
+    >>> e.package
+    'gdal'
+    >>> e.version
+    '2.0.2-r2'
+    >>> e.repository
+    <Repository: 'gentoo'>
+    >>> e.repository.location
+    PosixPath('/usr/portage')
+    >>>
+
+And much more
+-------------
+
+You can check if an ebuild matches a given atom:
+
+.. code-block:: python
+
+    >>> e = appi.Ebuild('/usr/portage/app-portage/gentoolkit/gentoolkit-0.3.2-r1.ebuild')
+    >>> e.matches_atom(appi.QueryAtom('~app-portage/gentoolkit-0.3.2'))
+    True
+    >>> e.matches_atom(appi.QueryAtom('>gentoolkit-0.3.2', strict=False))
+    True
+    >>> e.matches_atom(appi.QueryAtom('>=app-portage/gentoolkit-1.2.3'))
+    False
+    >>> e.matches_atom(appi.QueryAtom('=app-portage/chuse-0.3.2-r1'))
+    False
+    >>>
+
+
+Finally, let's checkout versions
+================================
+
+Atom and ebuild objects both define a ``get_version()`` method that returns the version
+number as a ``Version`` object.
+
+.. code-block:: python
+
+    >>> atom = appi.QueryAtom('=x11-wm/qtile-0.10*')
+    >>> atom.version
+    '0.10'
+    >>> atom.get_version()
+    <Version: '0.10'>
+    >>> [(eb, eb.get_version()) for eb in atom.list_matching_ebuilds()]
+    [(<Ebuild: 'x11-wm/qtile-0.10.5::gentoo'>, <Version: '0.10.5'>), (<Ebuild: 'x11-wm/qtile-0.10.6::gentoo'>, <Version: '0.10.6'>)]
+    >>>
+
+Inspect version parts
+---------------------
+
+.. code-block:: python
+
+    >>> v = Version('3.14a_beta05_p4_alpha11-r16')
+    >>> v.base
+    '3.14'
+    >>> v.letter
+    'a'
+    >>> v.suffix
+    '_beta05_p4_alpha11'
+    >>> v.revision
+    '16'
+    >>>
+
+Compare versions
+----------------
+
+.. code-block:: python
+
+    >>> v1 = Version('2.76_alpha1_beta2_pre3_rc4_p5')
+    >>> v2 = Version('1999.05.05')
+    >>> v3 = Version('2-r5')
+    >>> v1 == v2
+    False
+    >>> v1 > v3
+    True
+    >>> v1 < v2
+    True
+    >>> v3.startswith(v1)
+    False
+    >>> Version('0.0a-r1').startswith(Version('0.0'))
+    True
+    >>>
