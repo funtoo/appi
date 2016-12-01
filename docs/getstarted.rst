@@ -170,3 +170,12 @@ Just as with atoms, you can check the validity of an ebuild by instantiating it.
     ...     True
     ...
     False
+    >>> appi.Ebuild('/Unexisting/overlay/path/foo/bar/bar-1.5a_pre5-r12.ebuild')
+    <Ebuild: 'foo/bar-1.5a_pre5-r12'>
+    >>>
+
+.. warning:: Note that currently, valid paths to unexisting files are considered valid
+             ebuilds. This behavior will very likely be changed from version ``0.1`` as
+             reading the ebuild file will be needed to extract some information such as
+             slots and useflags. Thus, the ``Ebuild`` constructor may also raise
+             ``OSError`` exceptions such as ``FileNotFoundError`` in future versions.
