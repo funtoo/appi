@@ -175,7 +175,7 @@ Just as with atoms, you can check the validity of an ebuild by instantiating it.
     >>>
 
 .. warning:: Note that currently, valid paths to unexisting files are considered valid
-             ebuilds. This behavior is very likely be chang as of version ``0.1`` since
+             ebuilds. This behavior is very likely change as of version ``0.1`` since
              reading the ebuild file will be needed to extract some information such as
              slots and useflags. Thus, the ``Ebuild`` constructor may also raise
              ``OSError`` exceptions such as ``FileNotFoundError`` in future versions.
