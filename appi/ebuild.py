@@ -73,10 +73,11 @@ class Ebuild(AppiObject):
 
     def __str__(self):
         template = '{cat}/{pkg}-{ver}'
+        info = dict(cat=self.category, pkg=self.package, ver=self.version)
         if self.repository:
             template += '::{repo}'
-        return template.format(cat=self.category, pkg=self.package,
-                               ver=self.version, repo=self.repository.name)
+            info['repo'] = self.repository.name
+        return template.format(**info)
 
     def get_version(self):
         """Return the version as Version object."""
