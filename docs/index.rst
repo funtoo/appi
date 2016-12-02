@@ -3,7 +3,12 @@ Welcome to appi's documentation!
 ================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    install
    getstarted
+
+.. toctree::
+   :maxdepth: 4
+
+   ref/index
