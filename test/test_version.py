@@ -83,24 +83,85 @@ class TestInvalidVersion(TestCase, metaclass=TestInvalidVersionMetaclass):
     ]
 
 
+class TestTupleMetaclass(type(TestCase)):
+
+    @staticmethod
+    def test_func_wrapper(version, expected, method):
+        def test_func(self):
+            v = Version(version)
+            self.assertEqual(getattr(v, method)(), expected)
+        return test_func
+
+    def __new__(mcs, name, bases, attrs):
+        for version, expected in attrs['version_to_tuple']:
+            func_name = 'test_{}_{}'.format(attrs['method'], version)
+            test_func = mcs.test_func_wrapper(version, expected, attrs['method'])
+            test_func.__name__ = func_name
+            attrs[func_name] = test_func
+        return super().__new__(mcs, name, bases, attrs)
+
+
 class TestGetVersionTuple(TestCase):
     pass
 
 
-class TestGetBaseTuple(TestCase):
-    pass
+class TestGetBaseTuple(TestCase, metaclass=TestTupleMetaclass):
+
+    method = 'get_base_tuple'
+    version_to_tuple = [
+        ('0.0', (0, 0.)),
+        ('1', (1,)),
+        ('1.2.2-r1', (1, .2, .2)),
+        ('51a_pre5-r2', (51,)),
+        ('12.3.456.8.90_p0', (12, .3, .456, .8, .90)),
+        ('01.02.0141.47.002', (1, .02, .0141, .47, .002)),
+        ('005.500.050.505', (5, .5, .05, .505)),
+    ]
 
 
-class TestGetLetterTuple(TestCase):
-    pass
+class TestGetLetterTuple(TestCase, metaclass=TestTupleMetaclass):
+
+    method = 'get_letter_tuple'
+    version_to_tuple = [
+        ('0a', 1),
+        ('1z', 26),
+        ('1.2.2x-r1', 24),
+        ('51s_pre5-r2', 19),
+        ('12.3.456.8.90u_p0', 21),
+        ('01.02.0141.47.002', 0),
+        ('1.12-r1', 0),
+        ('005.500.050.505n', 14),
+    ]
 
 
-class TestGetSuffixTuple(TestCase):
-    pass
+class TestGetSuffixTuple(TestCase, metaclass=TestTupleMetaclass):
+
+    method = 'get_suffix_tuple'
+    version_to_tuple = [
+        ('0.0h', ((0, -1),)),
+        ('1.2.2x-r1', ((0, -1),)),
+        ('3.14_pre5', ((-2, 5),)),
+        ('4.1.2_p0', ((0, 0),)),
+        ('41.2_alpha1', ((-4, 1),)),
+        ('412.54_alpha4_beta3_pre2_rc1_p0', ((-4, 4), (-3, 3), (-2, 2), (-1, 1), (0, 0),)),
+        ('1_beta3_beta0_alpha5_rc5-r9', ((-3, 3), (-3, 0), (-4, 5), (-1, 5),)),
+    ]
 
 
-class TestGetRevisionTuple(TestCase):
-    pass
+class TestGetRevisionTuple(TestCase, metaclass=TestTupleMetaclass):
+
+    method = 'get_revision_tuple'
+    version_to_tuple = [
+        ('0-r1', 1),
+        ('3.14-r7', 7),
+        ('1.2.2x-r123456789', 123456789),
+        ('51s_pre5-r000666', 666),
+        ('12.3.456.8.90u_p0', 0),
+        ('01.02.0141.47-r000', 0),
+        ('1.12-r0', 0),
+        ('005.500.050.505n-r70', 70),
+        ('1', 0),
+    ]
 
 
 class TestStartswithMetaclass(type(TestCase)):

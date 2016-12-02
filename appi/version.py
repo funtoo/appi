@@ -102,6 +102,10 @@ class Version(AppiObject):
         return self.compare(other) != 0
 
     def get_version_tuple(self):
+        """Return the version number as a tuple.
+        This tuple can be browsed recursively in order to determine
+        versions ordering.
+        """
         return (
             self.get_base_tuple(), self.get_letter_tuple(),
             self.get_suffix_tuple(), self.get_revision_tuple(),
