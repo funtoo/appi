@@ -28,6 +28,7 @@ class Ebuild(AppiObject):
         - category
         - package
         - version
+        - repository
 
     This is not yet implemented, but it should also be able to determine some
     properties defined in the ebuild file:
