@@ -67,7 +67,7 @@ Check atom validity
           an ``AtomError`` while it is actually a valid atom. There is a ``strict`` mode
           enabled by defaut, which makes package category mandatory in order to avoid
           dealing with ambiguous packages. You can easily disable this behavior by setting
-          ``strict=False``.o
+          ``strict=False``.
 
 .. code-block:: python
 

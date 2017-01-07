@@ -37,6 +37,33 @@ Examples
     >>>
 
 
+Attributes
+----------
+
+- ``category`` (``str``) The package category
+- ``package`` (``str``) The package name
+- ``version`` (``str``) The package version
+- ``repository`` (``appi.Repository``) The package repository if available (``None`` otherwise)
+
+Examples
+~~~~~~~~
+
+.. code-block:: python
+
+    >>> e = appi.Ebuild('/usr/portage/www-client/brave/brave-0.12.15.ebuild')
+    >>> e.category
+    'www-client'
+    >>> e.package
+    'brave'
+    >>> e.version
+    '0.12.15'
+    >>> e.repository
+    <Repository 'gentoo'>
+    >>> f = appi.Ebuild('/tmp/www-client/brave/brave-0.12.15.ebuild')
+    >>> f.repository
+    >>>
+
+
 String representation
 ---------------------
 
