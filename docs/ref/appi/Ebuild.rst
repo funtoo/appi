@@ -40,10 +40,11 @@ Examples
 Attributes
 ----------
 
-- ``category`` (``str``) The package category
-- ``package`` (``str``) The package name
-- ``version`` (``str``) The package version
-- ``repository`` (``appi.Repository``) The package repository if available (``None`` otherwise)
+- **category** (``str``) The package category
+- **package** (``str``) The package name
+- **version** (``str``) The package version
+- **repository** (:ref:`appi.conf.Repository <appi.conf.Repository>`) The package repository
+  if available, ``None`` otherwise
 
 Examples
 ~~~~~~~~
