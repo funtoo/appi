@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Distributed under the terms of the GNU General Public License v2
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
     README = readme.read()
@@ -9,7 +9,7 @@ with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
 setup(
     name='appi',
     version='0.0.0',
-    packages=['appi'],
+    packages=find_packages(exclude='tests'),
     include_package_data=True,
     license='GPL-2',
     description="Another Portage Python Interface",
