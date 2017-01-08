@@ -9,7 +9,7 @@ with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
 setup(
     name='appi',
     version='0.0.0',
-    packages=find_packages(exclude='tests'),
+    packages=find_packages(exclude='test'),
     include_package_data=True,
     license='GPL-2',
     description="Another Portage Python Interface",
