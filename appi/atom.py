@@ -143,6 +143,24 @@ class DependAtom(BaseAtom):
         r'(:{slot})?(\[{use}\])?$'
     ).format(**BaseAtom.patterns))
 
+    def __str__(self):
+        template = ''
+        if self.selector:
+            template += '{prefix}{selector}'
+        if self.category:
+            template += '{category}/'
+        template += '{package}'
+        if self.version:
+            template += '-{version}{postfix}'
+        if self.slot:
+            template += ':{slot}'
+        if self.use:
+            template += '[{use}]'
+        return template.format(
+            prefix=self.prefix, selector=self.selector, category=self.category,
+            package=self.package, version=self.version, postfix=self.postfix,
+            slot=self.slot, use=self.use)
+
 
 class QueryAtom(BaseAtom):
     """An atom used for querying an ebuild."""
@@ -151,6 +169,24 @@ class QueryAtom(BaseAtom):
         r'^{selector}?({category}/)?{package}(-{version}{postfix}?)?'
         r'(:{slot})?(::{repository})?$'
     ).format(**BaseAtom.patterns))
+
+    def __str__(self):
+        template = ''
+        if self.selector:
+            template = '{selector}'
+        if self.category:
+            template += '{category}/'
+        template += '{package}'
+        if self.version:
+            template += '-{version}{postfix}'
+        if self.slot:
+            template += ':{slot}'
+        if self.repository:
+            template += '::{repository}'
+        return template.format(
+            selector=self.selector, category=self.category,
+            package=self.package, version=self.version, postfix=self.postfix,
+            slot=self.slot, repository=self.repository)
 
     def get_repository(self):
         if not self.repository:
