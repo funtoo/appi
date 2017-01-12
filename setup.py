@@ -8,7 +8,7 @@ with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
 
 setup(
     name='appi',
-    version='0.0.0',
+    version='0.0.1',
     packages=find_packages(exclude=['test']),
     include_package_data=True,
     license='GPL-2',
