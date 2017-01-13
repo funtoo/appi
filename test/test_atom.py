@@ -49,6 +49,62 @@ class TestAtomValidity(TestCase, metaclass=TestAtomValidityMetaclass):
     ]
 
 
+class TestQueryAtomStrMetaclass(type(TestCase)):
+
+    @staticmethod
+    def test_func_wrapper(a):
+        def test_func(self):
+            atom = QueryAtom(a, strict=False)
+            self.assertEqual(str(atom), a)
+        return test_func
+
+    def __new__(mcs, name, bases, attrs):
+        for a in attrs['atoms']:
+            func_name = 'test_str_{}'.format(a)
+            test_func = mcs.test_func_wrapper(a)
+            test_func.__name__ = func_name
+            attrs[func_name] = test_func
+        return super().__new__(mcs, name, bases, attrs)
+
+
+class TestQueryAtomStr(TestCase, metaclass=TestQueryAtomStrMetaclass):
+
+    atoms = [
+        'app-portage/chuse', 'portage', '=dev-python/appi-0.0.2', '~sys-devel/flex-2.6.2',
+        'firefox::gentoo', 'sys-kernel/vanilla-sources:4.8.17',
+        '=sys-kernel/vanilla-sources-4.8.17-r1:4.8.17::gentoo', '=python-3*',
+        '=dev-lang/python-2*:2.7',
+    ]
+
+
+class TestDependAtomStrMetaclass(type(TestCase)):
+
+    @staticmethod
+    def test_func_wrapper(a):
+        def test_func(self):
+            atom = DependAtom(a, strict=False)
+            self.assertEqual(str(atom), a)
+        return test_func
+
+    def __new__(mcs, name, bases, attrs):
+        for a in attrs['atoms']:
+            func_name = 'test_str_{}'.format(a)
+            test_func = mcs.test_func_wrapper(a)
+            test_func.__name__ = func_name
+            attrs[func_name] = test_func
+        return super().__new__(mcs, name, bases, attrs)
+
+
+class TestDependAtomStr(TestCase, metaclass=TestDependAtomStrMetaclass):
+
+    atoms = [
+        '!app-portage/chuse', '!!portage', '!=dev-python/appi-0.0.2', '~sys-devel/flex-2.6.2',
+        'firefox[system-cairo]', 'sys-kernel/vanilla-sources:4.8.17[deblob,symlink]',
+        '!!=sys-kernel/vanilla-sources-4.8.17-r1:4.8.17[deblob]', '=python-3*[doc]',
+        '=dev-lang/python-2*:2.7',
+    ]
+
+
 class TestGetVersionMetaclass(type(TestCase)):
 
     @staticmethod
@@ -64,7 +120,7 @@ class TestGetVersionMetaclass(type(TestCase)):
 
     def __new__(mcs, name, bases, attrs):
         for a, v in attrs['atom_to_version']:
-            func_name = 'test_get_version_{}'.format(v)
+            func_name = 'test_get_version_{}__{}'.format(a, v)
             test_func = mcs.test_func_wrapper(a, v)
             test_func.__name__ = func_name
             attrs[func_name] = test_func
