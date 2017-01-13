@@ -85,7 +85,7 @@ Examples
     >>>
 
 get_version() -> :ref:`appi.Version <appi.Version>`
--------------
+---------------------------------------------------
 
 ``Ebuild.version`` is a string representing the version of the ebuild. ``get_version()`` returns it
 as a :ref:`Version <appi.Version>` object.
@@ -102,7 +102,7 @@ Examples
     <Version '0.99_beta19'>
 
 matches_atom(atom) -> ``bool``
-------------------
+------------------------------
 
 Return ``True`` if the ebuild matches the given ``atom``.
 
