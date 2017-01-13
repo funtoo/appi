@@ -21,7 +21,7 @@ matrix:
 
   allow_failures:
     - python: pypy3
-      env: pypy3
+      env: TOXENV=pypy3
 
 cache:
   directories:
