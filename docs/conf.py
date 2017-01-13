@@ -53,7 +53,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'appi'
-copyright = '2016, Antoine Pinsard'
+copyright = '2017, Antoine Pinsard'
 author = 'Antoine Pinsard'
 
 # The version info for the project you're documenting, acts as replacement for

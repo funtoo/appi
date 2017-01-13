@@ -6,7 +6,7 @@ Install appi
 Installation from portage tree
 ==============================
 
-First check if ``dev-python/appi`` is already in you portage tree:
+First check if ``dev-python/appi`` is already in your portage tree:
 
 .. code-block:: bash
 

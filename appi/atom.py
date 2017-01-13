@@ -145,13 +145,17 @@ class DependAtom(BaseAtom):
 
     def __str__(self):
         template = ''
+        if self.prefix:
+            template += '{prefix}'
         if self.selector:
-            template += '{prefix}{selector}'
+            template += '{selector}'
         if self.category:
             template += '{category}/'
         template += '{package}'
         if self.version:
-            template += '-{version}{postfix}'
+            template += '-{version}'
+        if self.postfix:
+            template += '{postfix}'
         if self.slot:
             template += ':{slot}'
         if self.use:
@@ -178,7 +182,9 @@ class QueryAtom(BaseAtom):
             template += '{category}/'
         template += '{package}'
         if self.version:
-            template += '-{version}{postfix}'
+            template += '-{version}'
+        if self.postfix:
+            template += '{postfix}'
         if self.slot:
             template += ':{slot}'
         if self.repository:

@@ -1,4 +1,4 @@
-.. _appi.Version:
+.. _appi.Ebuild:
 
 ===============
 ``appi.Ebuild``
