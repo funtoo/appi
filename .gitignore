@@ -5,3 +5,5 @@
 *.mo
 
 /docs/_build/
+/.tox
+/appi.egg-info
