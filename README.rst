@@ -4,6 +4,8 @@ appi
 
 Another Portage Python Interface
 
+|rtd0.0| |travis|
+
 .. image:: https://readthedocs.org/projects/appi/badge/?version=0.0
   alt: Documentation
   target: http://appi.readthedocs.io/en/0.0/?badge=0.0
@@ -62,7 +64,7 @@ We use the following version format: ``M.m.p``
 We may also package pre-releases (postfixed with ``_preN``, where ``N`` is the pre-release version)
 and release candidates (postfixed with ``_rcN``, where ``N`` is the release candidate version).
 
-**Starting from version ``1.0.0``,** a major version bump means:
+**Starting from version 1.0.0,** a major version bump means:
 
 - Global refactoring of the code base
 - Removal of features deprecated in the previous releases
@@ -87,7 +89,7 @@ major version bump. However:
 - Support and patches **will** still be provided for the last two minor versions before
   the curent version.
 
-**Before version ``1.0.0``,** any minor version bump may break backward compatibility.
+**Before version 1.0.0,** any minor version bump may break backward compatibility.
 
 
 Contributing
@@ -114,7 +116,8 @@ So we will be happy to merge your work into the next minor version.
 If the issue is already assigned to someone, you should tell him in the comments that you are
 willing to help on this feature.
 
-### Implementing a new feature that does not have a GitHub issue
+Implementing a new feature that does not have a GitHub issue
+------------------------------------------------------------
 
 If you wish to implement a new feature that has no GitHub issue yet, please create a GitHub issue
 so that:
@@ -135,4 +138,11 @@ Improving the documentation
 Improving test cases
 --------------------
 
-.. _PEP8 Style Guide: https://www.python.org/dev/peps/pep-0008/
+.. _`PEP8 Style Guide`: https://www.python.org/dev/peps/pep-0008/
+
+.. |rtd0.0| image:: https://readthedocs.org/projects/appi/badge/?version=0.0
+    :alt: Documentation Status
+    :target: http://appi.readthedocs.io/en/0.0/?badge=0.0
+
+.. |travis| image:: https://travis-ci.org/apinsard/appi.svg?branch=0.0
+    :target: https://travis-ci.org/apinsard/appi
