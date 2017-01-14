@@ -27,11 +27,6 @@ cache:
   directories:
     - $HOME/.cache/pip
 
-addons:
-  apt:
-    packages:
-      - graphviz
-
 install:
   - pip install tox
 
