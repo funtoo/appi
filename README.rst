@@ -6,10 +6,6 @@ Another Portage Python Interface
 
 |rtd0.0| |travis|
 
-.. image:: https://readthedocs.org/projects/appi/badge/?version=0.0
-  alt: Documentation
-  target: http://appi.readthedocs.io/en/0.0/?badge=0.0
-
 Why not `portage`?
 ==================
 
