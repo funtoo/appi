@@ -63,3 +63,93 @@ Examples
     appi.atom.AtomError: google-chrome may be ambiguous, please specify the category.
     >>> appi.QueryAtom('google-chrome', strict=False)
     <QueryAtom: 'google-chrome'>
+
+
+Attributes
+----------
+
+- **selector** (``str``) The package selector (``>=``, ``<=``, ``<``, ``=``, ``>`` or ``~``)
+- **category** (``str``) The package category
+- **package** (``str``) The package name
+- **version** (``str``) The package version
+- **postfix** (``str``) The package postfix (``*`` is the only possible value)
+- **slot** (``str``) The package slot
+- **repository** (``str``) The name of the repository
+
+All these attribute, excepted **package**, are optional and may be ``None``.
+
+Examples
+~~~~~~~~
+
+.. code-block:: python
+
+    >>> a = appi.QueryAtom('=dev-db/mysql-5.6*:5.6::gentoo')
+    >>> a.selector
+    '='
+    >>> a.category
+    'dev-db'
+    >>> a.package
+    'mysql'
+    >>> a.version
+    '5.6'
+    >>> a.postfix
+    '*'
+    >>> a.slot
+    '5.6'
+    >>> a.repository
+    'gentoo'
+    >>> b = appi.QueryAtom('~postgresql-9.4', strict=False)
+    >>> b.selector
+    '~'
+    >>> b.category
+    >>> b.package
+    'postgresql'
+    >>> b.version
+    '9.4'
+    >>> b.postfix
+    >>> b.slot
+    >>> b.repository
+    >>>
+
+
+String Representation
+---------------------
+
+The string representation of an atom is the raw atom string itself:
+``<selector><category>/<package>-<version><postfix>:<slot>::<repository>``
+
+Examples
+~~~~~~~~
+
+.. code-block:: python
+
+    >> str(appi.QueryAtom('dev-db/postgresql'))
+    'dev-db/postgresql'
+    >>> str(appi.QueryAtom('<dev-db/postgresql-9.6'))
+    '<dev-db/postgresql-9.6'
+    >>> str(appi.QueryAtom('>=dev-db/postgresql-8.4-r1::gentoo'))
+    '>=dev-db/postgresql-8.4-r1::gentoo'
+    >>> str(appi.QueryAtom('dev-db/postgresql:9.4'))
+    'dev-db/postgresql:9.4'
+    >>> a = appi.QueryAtom('=postgresql-9.4-r1', strict=False)
+    >>> str(a)
+    '=postgresql-9.4-r1'
+    >>> a.category = 'dev-db'
+    >>> str(a)
+    '=dev-db/postgresql-9.4-r1'
+
+.. warning:: This can be useful to change the package category of an existing instance as above
+             if you want to read atoms without requiring category and infer it afterwards if it
+             is not a ambiguous. **However,** it is not recommended to change other attributes
+             values. Validity won't be checked and this can lead to incoherent atoms as
+             illustrated below. We don't prevent attributes from being altered, we assume you
+             are a sane minded developer who knows what he is doing.
+
+.. code-block:: python
+
+    >>> # /!\ DONT DO THIS /!\
+    >>> a.selector = ''
+    >>> str(a)
+    'dev-db/postgresql-9.4-r1'
+    >>> # Seriously...
+    >>>

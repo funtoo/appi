@@ -7,7 +7,7 @@ Another Portage Python Interface
 |rtd0.0| |travis|
 
 Why not `portage`?
-==================
+------------------
 
 Mainly, I was having hard time understanding the python ``portage`` module. I found the code
 somewhat obscure and lacking documentation. So I decided to start an alternative, bringing my
@@ -18,10 +18,10 @@ features to enable portage-based distributions newcomers to use it and improve i
 
 
 Examples
-========
+--------
 
 Atom
-----
+~~~~
 
 .. code-block:: python
 
@@ -49,7 +49,7 @@ Atom
 
 
 Versioning Policy
-=================
+-----------------
 
 We use the following version format: ``M.m.p``
 
@@ -92,7 +92,7 @@ major version bump. However:
 
 
 Contributing
-============
+------------
 
 If you would like to contribute, I'd be glad to merge your pull requests.
 
@@ -101,7 +101,7 @@ is recommended. However, you are allowed to go up to 99 characters per line *if*
 need some extra space for readability concerns.
 
 Implementing a new feature that has a GitHub issue
---------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you wish to implement a new feature (or even only start working on it) that already has a
 GitHub issue, please pay attention to its milestone. The milestone indicates in which version
@@ -116,7 +116,7 @@ If the issue is already assigned to someone, you should tell him in the comments
 willing to help on this feature.
 
 Implementing a new feature that does not have a GitHub issue
-------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you wish to implement a new feature that has no GitHub issue yet, please create a GitHub issue
 so that:
@@ -129,13 +129,13 @@ Note: any improvement that changes the code logic and is not a bug fix is consid
 So even if you only add an attribute an object, please create a new issue.
 
 Fixing a bug, a typo or generally improving the code readability
-----------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Improving the documentation
----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Improving test cases
---------------------
+~~~~~~~~~~~~~~~~~~~~
 
 .. _`PEP8 Style Guide`: https://www.python.org/dev/peps/pep-0008/
 
