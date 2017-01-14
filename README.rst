@@ -57,8 +57,8 @@ We use the following version format: ``M.m.p``
 - **m** is the minor version
 - **p** is the patch version
 
-We may also package pre-releases (postfixed with ``_preN``, where ``N`` is the pre-release version)
-and release candidates (postfixed with ``_rcN``, where ``N`` is the release candidate version).
+We may also package pre-releases (postfixed with ``_preN``, where **N** is the pre-release version)
+and release candidates (postfixed with ``_rcN``, where **N** is the release candidate version).
 
 **Starting from version 1.0.0,** a major version bump means:
 
@@ -84,6 +84,9 @@ major version bump. However:
   and fix them along the way, upgrading to a new major version will require no work at all.
 - Support and patches **will** still be provided for the last two minor versions before
   the curent version.
+- Starting from version 2.0.0, the main module will be named ``appiM`` where **M** is the major
+  version number (eg. ``appi2``, ``appi3``, ...). This will allow old software not using the
+  latest major version to stay available along with newer software using the latest major version.
 
 **Before version 1.0.0,** any minor version bump may break backward compatibility.
 
