@@ -1,6 +1,9 @@
 engines:
   duplication:
     enabled: true
+    config:
+      languages:
+        python:
     exclude_fingerprints:
       - a275f60437f03dcf3e00bd5b243ba374
       - 586d53a59ed6ce09342fffebfcc40e25
