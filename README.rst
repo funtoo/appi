@@ -4,7 +4,7 @@ appi
 
 Another Portage Python Interface
 
-|rtd0.0| |travis| |codeclimate|
+|rtd0.0| |travis|
 
 Why not `portage`?
 ==================
@@ -142,7 +142,3 @@ Improving test cases
 
 .. |travis| image:: https://travis-ci.org/apinsard/appi.svg?branch=0.0
     :target: https://travis-ci.org/apinsard/appi
-
-.. |codeclimate| image:: https://codeclimate.com/github/apinsard/appi/badges/gpa.svg
-   :target: https://codeclimate.com/github/apinsard/appi
-   :alt: Code Climate
