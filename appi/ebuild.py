@@ -89,10 +89,11 @@ class Ebuild(AppiObject):
         This method still lacks SLOT check.
         """
         atom_repository = getattr(atom, 'repository', None)
-        if ((atom.category and self.category != atom.category) or
-                (self.package != atom.package) or
-                (atom_repository and (not self.repository or
-                                      self.repository_name != atom_repository))):
+        valid_category = not atom.category or self.category == atom.category
+        valid_package = self.package == atom.package
+        valid_repository = not atom_repository or (
+            self.repository and self.repository.name == atom_repository)
+        if not (valid_category and valid_package and valid_repository):
             return False
         if atom.version:
             v1 = self.get_version()
