@@ -92,7 +92,11 @@ class BaseAtom(AppiObject):
             return None
         return Version(version)
 
-    def get_version_glob_pattern(self):
+    def _get_version_glob_pattern(self):
+        """Returns the version part of the glob pattern.
+
+        See BaseAtom.get_glob_pattern()
+        """
         if not self.version or self.selector in ['>=', '>', '<', '<=']:
             return '*'
         if self.selector == '~' or self.postfix == '*':
@@ -103,11 +107,13 @@ class BaseAtom(AppiObject):
         """Return a glob pattern that will match ebuild files that *MAY* match this atom.
         All matching ebuilds will be matched by the glob pattern,
         but not all files matched by the glob pattern will match the atom.
+
+        The returned glob pattern starts from repositories root.
         """
         params = {
             'pkg': self.package,
             'cat': self.category or '*',
-            'ver': self.get_version_glob_pattern(),
+            'ver': self._get_version_glob_pattern(),
         }
         return '{cat}/{pkg}/{pkg}-{ver}.ebuild'.format(**params)
 
