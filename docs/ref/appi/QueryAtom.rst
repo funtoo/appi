@@ -151,5 +151,35 @@ Examples
     >>> a.selector = ''
     >>> str(a)
     'dev-db/postgresql-9.4-r1'
-    >>> # Seriously...
+    >>> # Why would you anyway?
     >>>
+
+
+get_version() -> :ref:`appi.Version <appi.Version>`
+---------------------------------------------------
+
+``QueryAtom.version`` is a string representing the version of the ebuild.
+``get_version()`` returns it as a :ref:`Version <appi.Version>` object.
+
+Examples
+~~~~~~~~
+
+.. code-block:: python
+
+    >>> a = appi.QueryAtom('>=media-gfx/image-magick-7.0:0/7.0.4.3')
+    >>> a.version
+    '7.0'
+    >>> a.get_version()
+    <Version '7.0'>
+
+get_globpattern() -> ``str``
+----------------------------
+
+get_repository() -> :ref:`appi.conf.Repository <appi.conf.Repository>`
+----------------------------------------------------------------------
+
+list_matching_ebuilds() -> {:ref:`appi.Ebuild <appi.Ebuild>`, ...}
+-----------------------------------------------------------------
+
+matches_existing_ebuild() -> ``bool``
+-------------------------------------

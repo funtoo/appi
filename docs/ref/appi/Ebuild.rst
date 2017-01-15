@@ -95,7 +95,7 @@ Examples
 
 .. code-block:: python
 
-    >>> e = Ebuild('/usr/portage/media-libs/libcaca/libcaca-0.99_beta19.ebuild')
+    >>> e = appi.Ebuild('/usr/portage/media-libs/libcaca/libcaca-0.99_beta19.ebuild')
     >>> e.version
     '0.99_beta19'
     >>> e.get_version()
@@ -113,7 +113,7 @@ Examples
 
 .. code-block:: python
 
-    >>> e = Ebuild('/usr/portage/media-gfx/blender/blender-2.72b-r4.ebuild')
+    >>> e = appi.Ebuild('/usr/portage/media-gfx/blender/blender-2.72b-r4.ebuild')
     >>> e.matches_atom(QueryAtom('=media-gfx/blender-2.72b-r4'))
     True
     >>> e.matches_atom(QueryAtom('media-gfx/gimp'))
