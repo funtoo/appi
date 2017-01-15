@@ -1,14 +1,21 @@
 # -*- coding: utf-8 -*-
 # Distributed under the terms of the GNU General Public License v2
-import os
+from pathlib import Path
+import re
 from setuptools import setup, find_packages
 
-with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
+BASE_DIR = Path(__file__).parent
+
+with open(BASE_DIR / 'README.rst') as readme:
     README = readme.read()
+
+with open(BASE_DIR / 'appi' / '__init__.py') as init_file:
+    pattern = '''^\s*__version__\s*=\s_["']([0-9.]+)["']\s*$'''
+    VERSION = re.search(pattern, init_file.read(), re.M).group(1)
 
 setup(
     name='appi',
-    version='0.0.2',
+    version=VERSION,
     packages=find_packages(exclude=['test']),
     include_package_data=True,
     license='GPL-2',
