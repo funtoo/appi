@@ -61,7 +61,6 @@ class BaseAtom(AppiObject):
         if not match:
             raise AtomError("{atom} is not a valid atom.", atom_string)
 
-        self.raw_value = atom_string
         for k, v in match.groupdict().items():
             setattr(self, k, v)
 
@@ -85,9 +84,6 @@ class BaseAtom(AppiObject):
             raise AtomError(
                 "{atom} is invalid, '*' postfix can only be used with "
                 "the '=' selector.", atom_string, code='unexpected_postfix')
-
-    def __str__(self):
-        return self.raw_value
 
     def get_version(self):
         """Return the version as Version object."""
