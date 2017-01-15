@@ -20,7 +20,7 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-from pathlib import Path
+import os
 import re
 
 # -- General configuration ------------------------------------------------
@@ -62,7 +62,7 @@ author = 'Antoine Pinsard'
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
-with (Path(__file__).parent.parent / 'appi' / '__init__.py').open() as f:
+with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'appi', '__init__.py')) as f:
     pattern = '''^\s*__version__\s*=\s*["']([0-9.]+)["']\s*$'''
     # The full version, including alpha/beta/rc tags.
     release = re.search(pattern, f.read(), re.M).group(1)
