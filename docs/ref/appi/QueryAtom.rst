@@ -140,10 +140,12 @@ Examples
 
 .. warning:: This can be useful to change the package category of an existing instance as above
              if you want to read atoms without requiring category and infer it afterwards if it
-             is not a ambiguous. **However,** it is not recommended to change other attributes
-             values. Validity won't be checked and this can lead to incoherent atoms as
-             illustrated below. We don't prevent attributes from being altered, we assume you
-             are a sane minded developer who knows what he is doing.
+             is not a ambiguous.
+
+             **However,** it is not recommended to change other attributes values. Validity won't
+             be checked and this can lead to incoherent atoms as illustrated below. We don't
+             prevent attributes from being altered, we assume you are a sane minded developer who
+             knows what he is doing.
 
 .. code-block:: python
 
@@ -158,7 +160,7 @@ Examples
 get_version() -> :ref:`appi.Version <appi.Version>`
 ---------------------------------------------------
 
-``QueryAtom.version`` is a string representing the version of the ebuild.
+``QueryAtom.version`` is a string representing the version included in the atom.
 ``get_version()`` returns it as a :ref:`Version <appi.Version>` object.
 
 Examples
@@ -172,14 +174,86 @@ Examples
     >>> a.get_version()
     <Version '7.0'>
 
-get_globpattern() -> ``str``
-----------------------------
-
 get_repository() -> :ref:`appi.conf.Repository <appi.conf.Repository>`
 ----------------------------------------------------------------------
+
+``QueryAtom.repository`` is the name of the repository included in the atom.
+``get_repository()`` returns the repository a :ref:`Repository <appi.conf.Repository>` object.
+
+This may be useful if you want to get the path or other data from the repository.
+
+Examples
+~~~~~~~~
+
+.. code-block:: python
+
+    >>> a = appi.QueryAtom('app-portage/chuse::gentoo')
+    >>> a.repository
+    'gentoo'
+    >>> a.get_repository()
+    <Repository: 'gentoo'>
+    >>> a = appi.QueryAtom('app-portage/chuse::sapher')
+    >>> appi.QueryAtom('app-portage/chuse::sapher').get_repository()
+    <Repository: 'sapher'>
+    >>> appi.QueryAtom('app-portage/chuse::unexisting').get_repository()
+    >>>
 
 list_matching_ebuilds() -> {:ref:`appi.Ebuild <appi.Ebuild>`, ...}
 ------------------------------------------------------------------
 
+Returns the ``set`` of all ebuilds matching this atom.
+
+Examples
+~~~~~~~~
+
+.. code-block:: python
+
+    >>> appi.QueryAtom('app-portage/chuse').list_matching_ebuilds()
+    {<Ebuild: 'app-portage/chuse-1.0.2::gentoo'>, <Ebuild: 'app-portage/chuse-1.1::gentoo'>,
+    <Ebuild: 'app-portage/chuse-1.0.2::sapher'>, <Ebuild: 'app-portage/chuse-1.1::sapher'>}
+    >>> appi.QueryAtom('app-portage/chuse::gentoo').list_matching_ebuilds()
+    {<Ebuild: 'app-portage/chuse-1.0.2::gentoo'>, <Ebuild: 'app-portage/chuse-1.1::gentoo'>}
+    >>> appi.QueryAtom('screen', strict=False).list_matching_ebuilds()
+    {<Ebuild: 'app-misc/screen-4.0.3-r9::funtoo-overlay'>, <Ebuild: 'app-vim/screen-1.5::gentoo'>,
+    <Ebuild: 'app-misc/screen-4.0.3-r9::gentoo'>, <Ebuild: 'app-misc/screen-4.4.0::funtoo-overlay'>,
+    <Ebuild: 'app-misc/screen-4.0.3-r10::funtoo-overlay'>,
+    <Ebuild: 'app-misc/screen-4.2.1-r2::funtoo-overlay'>, <Ebuild: 'app-misc/screen-4.4.0::gentoo'>,
+    <Ebuild: 'app-misc/screen-4.0.3-r10::gentoo'>, <Ebuild: 'app-misc/screen-4.0.3-r3::gentoo'>,
+    <Ebuild: 'app-misc/screen-4.0.3-r3::funtoo-overlay'>, <Ebuild: 'app-misc/screen-4.2.1-r2::gentoo'>}
+    >>> appi.QueryAtom('<screen-4', strict=False).list_matching_ebuilds()
+    {<Ebuild: 'app-vim/screen-1.5::gentoo'>}
+    >>> appi.QueryAtom('<screen-1', strict=False).list_matching_ebuilds()
+    set()
+    >>> appi.QueryAtom('dev-lang/python:3.4::gentoo').list_matching_ebuilds()
+    {<Ebuild: 'dev-lang/python-3.4.5::gentoo'>, <Ebuild: 'dev-lang/python-3.6.0::gentoo'>,
+    <Ebuild: 'dev-lang/python-3.5.2::gentoo'>, <Ebuild: 'dev-lang/python-2.7.12::gentoo'>}
+    >>>
+
+.. warning:: As you can see, the last example illustrates that slots are not yet taken into account
+             in ebuilds filtering. It is scheduled in version ``0.1``. See issue `#2`_ if you would
+             like to be informed on progress, or if you want to get involved and help us implement
+             it.
+
 matches_existing_ebuild() -> ``bool``
 -------------------------------------
+
+Returns ``True`` if any existing ebuild matches this atom. ``False`` otherwise. Basically, it
+checks if ``list_matching_ebuilds()`` returns an empty set or not.
+
+Examples
+~~~~~~~~
+
+.. code-block:: python
+
+    >>> appi.QueryAtom('dev-python/unexisting-module').matches_existing_ebuild()
+    False
+    >>> appi.QueryAtom('dev-python/appi').matches_existing_ebuild()
+    True
+    >>> appi.QueryAtom('~dev-python/appi-1.2.3').matches_existing_ebuild()
+    False
+    >>> appi.QueryAtom('screen', strict=False).matches_existing_ebuild()
+    True
+    >>>
+
+
+.. _#2: https://github.com/apinsard/appi/issues/2

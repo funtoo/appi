@@ -132,9 +132,6 @@ Now, would you like to get the list of ebuilds that satisfy this atom? Nothing's
              implement it.
 
 
-.. _#2: https://github.com/apinsard/appi/issues/2
-
-
 Well, this brings us to ebuilds.
 
 
@@ -270,3 +267,6 @@ Compare versions
     >>> Version('0.0a-r1').startswith(Version('0.0'))
     True
     >>>
+
+
+.. _#2: https://github.com/apinsard/appi/issues/2
