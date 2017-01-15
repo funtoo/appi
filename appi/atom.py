@@ -103,7 +103,7 @@ class BaseAtom(AppiObject):
             return self.version + '*'
         return self.version
 
-    def get_glob_pattern(self):
+    def _get_glob_pattern(self):
         """Return a glob pattern that will match ebuild files that *MAY* match this atom.
         All matching ebuilds will be matched by the glob pattern,
         but not all files matched by the glob pattern will match the atom.
@@ -120,7 +120,7 @@ class BaseAtom(AppiObject):
     @cached
     def list_matching_ebuilds(self):
         """Return the set of ebuilds matching this atom."""
-        glob_pattern = self.get_glob_pattern()
+        glob_pattern = self._get_glob_pattern()
         if getattr(self, 'repository', None):
             repository = self.get_repository()
             if not repository:
