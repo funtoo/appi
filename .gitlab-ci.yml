@@ -1,0 +1,5 @@
+test_py34:
+  script:
+    - pip install tox
+    - export TOXENV=py34
+    - tox
