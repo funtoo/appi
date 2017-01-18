@@ -8,15 +8,15 @@ test_py34:
   script:
     - TOXENV=py34 tox
 
-test_py35:
-  stage: test
-  script:
-    - TOXENV=py35 tox
-
-test_py36:
-  stage: test
-  script:
-    - TOXENV=py36 tox
+# test_py35:
+#   stage: test
+#   script:
+#     - TOXENV=py35 tox
+# 
+# test_py36:
+#   stage: test
+#   script:
+#     - TOXENV=py36 tox
 
 pep8:
   stage: test
