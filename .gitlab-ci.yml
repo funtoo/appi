@@ -1,9 +1,34 @@
 before_script:
   - apt-get update -qq && apt-get install -y -qq python3-dev python3-pip
-  - ls /usr/bin/python*
-  - python3 -v
+  - python3 --version
+  - pip3 install tox
+
 test_py34:
+  stage: test
   script:
-    - pip3 install tox
-    - export TOXENV=py34
-    - tox
+    - TOXENV=py34 tox
+
+test_py35:
+  stage: test
+  script:
+    - TOXENV=py35 tox
+
+test_py36:
+  stage: test
+  script:
+    - TOXENV=py36 tox
+
+pep8:
+  stage: test
+  script:
+    - TOXENV=pep8
+
+build:
+  stage: build
+  script:
+    - TOXENV=packaging
+
+docs:
+  stage: build
+  script:
+    - TOXENV=docs
