@@ -117,7 +117,7 @@ class Version(AppiObject):
         """
         base = self.base.split('.')
         return (int(base[0]),) + tuple(
-            map(lambda x: float('0.' + x), base[1:])
+            map(lambda x: float('0.' + x) if x[0] == '0' else int(x), base[1:])
         )
 
     def get_letter_tuple(self):
