@@ -4,7 +4,7 @@ appi
 
 Another Portage Python Interface
 
-|rtd0.0| |travis|
+|rtd0.1| |travis|
 
 Why not `portage`?
 ------------------
@@ -100,11 +100,11 @@ You should however stick to the `PEP8 Style Guide`_. A text width of 79 characte
 is recommended. However, you are allowed to go up to 99 characters per line *if* you
 need some extra space for readability concerns.
 
-Implementing a new feature that has a GitHub issue
+Implementing a new feature that has a GitLab issue
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you wish to implement a new feature (or even only start working on it) that already has a
-GitHub issue, please pay attention to its milestone. The milestone indicates in which version
+GitLab issue, please pay attention to its milestone. The milestone indicates in which version
 this feature is planned, and thus, to which branch you should send your pull request.
 
 If the issue has no milestone, please indicate in a comment that you are interested in working
@@ -115,10 +115,10 @@ So we will be happy to merge your work into the next minor version.
 If the issue is already assigned to someone, you should tell him in the comments that you are
 willing to help on this feature.
 
-Implementing a new feature that does not have a GitHub issue
+Implementing a new feature that does not have a GitLab issue
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you wish to implement a new feature that has no GitHub issue yet, please create a GitHub issue
+If you wish to implement a new feature that has no GitLab issue yet, please create a GitLab issue
 so that:
 
 - we know someone is working on this feature
@@ -139,9 +139,9 @@ Improving test cases
 
 .. _`PEP8 Style Guide`: https://www.python.org/dev/peps/pep-0008/
 
-.. |rtd0.0| image:: https://readthedocs.org/projects/appi/badge/?version=0.0
+.. |rtd0.1| image:: https://readthedocs.org/projects/appi/badge/?version=0.1
     :alt: Documentation Status
-    :target: http://appi.readthedocs.io/en/0.0/?badge=0.0
+    :target: http://appi.readthedocs.io/en/0.1/?badge=0.1
 
-.. |travis| image:: https://travis-ci.org/apinsard/appi.svg?branch=0.0
+.. |travis| image:: https://travis-ci.org/apinsard/appi.svg?branch=0.1
     :target: https://travis-ci.org/apinsard/appi
