@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # Distributed under the terms of the GNU General Public License v2
+import os
 import re
+import subprocess
 
 from .base import AppiObject
 from .base.exception import PortageError
@@ -71,6 +73,7 @@ class Ebuild(AppiObject):
                 code='package_name_mismatch')
 
         self.repository = Repository.find(location=repo_location)
+        self.path = path
 
     def __str__(self):
         template = '{cat}/{pkg}-{ver}'
@@ -108,3 +111,82 @@ class Ebuild(AppiObject):
             if not getattr(v1, comp_method)(v2):
                 return False
         return True
+
+    @property
+    def vars(self):
+        """A dictionnary containing ebuild raw variables."""
+        if not hasattr(self, '_vars'):
+            self._parse_ebuild_file()
+        return self._vars
+
+    def get_ebuild_env(self):
+        """Return a dictionnary of ebuild predefined read-only variables."""
+        # TODO How to fill commented out variables? Should it be filled?
+        version = self.get_version()
+        upstream_version = str(version.get_upstream_version())
+        revision = 'r' + (version.revision or '0')
+        return dict(
+            P='{}-{}'.format(self.package, upstream_version),
+            PN=self.package,
+            PV=upstream_version,
+            PR=revision,
+            PVR=self.version,
+            PF='{}-{}'.format(self.package, self.version),
+            # A='',
+            CATEGORY=self.category,
+            # FILESDIR='',
+            # WORKDIR='',
+            # T='',
+            # D='',
+            # HOME='',
+            # ROOT='',
+            # DISTDIR='',
+            # EPREFIX='',
+            # ED='',
+            # EROOT='',
+        )
+
+    @classmethod
+    def _clean_ebuild_raw_vars(cls, raw_vars):
+        """Extract actual values from raw variables values retrieved with bash
+        'set' command.
+        """
+        cleaned_vars = {}
+        for k, v in raw_vars.items():
+            v = re.sub(rb'\n$', b'', v)
+            v = re.sub(rb"^\$?'(.*)'$", rb'\1', v)
+            cleaned_vars[k] = v.decode('unicode_escape')
+        return cleaned_vars
+
+    def _parse_ebuild_file(self):
+        """Execute the ebuild file and export ebuild-related variables to
+        `self._vars` dictionnary.
+        """
+        bin_path = '/usr/lib/portage/python3.5'
+        cmd = ['bash', '-c', 'source {}/ebuild.sh && set'.format(bin_path)]
+        repo_locations = (str(l) for l in Repository.list_locations())
+        env = dict(
+            os.environ,
+            PORTAGE_PIPE_FD='2',
+            PORTAGE_ECLASS_LOCATIONS=' '.join(repo_locations),
+            EBUILD=self.path,
+            EBUILD_PHASE='depend',
+            PORTAGE_BIN_PATH=bin_path,
+            PORTAGE_TMPDIR='/var/tmp',
+        )
+        env.update(self.get_ebuild_env())
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, env=env)
+
+        raw_vars = {}
+        ebuild_vars = [
+            'EAPI', 'DESCRIPTION', 'HOMEPAGE', 'SRC_URI', 'LICENSE', 'SLOT',
+            'KEYWORDS', 'IUSE', 'REQUIRED_USE', 'RESTRICT', 'DEPEND',
+            'RDEPEND', 'PDEPEND', 'S', 'PROPERTIES', 'DOCS', 'HTML_DOCS',
+        ]
+        for line in proc.stdout:
+            key, _, value = line.partition(b'=')
+            key = key.decode('ascii')
+            if key in ebuild_vars:
+                raw_vars[key] = value
+        proc.communicate()
+        self._vars = self._clean_ebuild_raw_vars(raw_vars)
