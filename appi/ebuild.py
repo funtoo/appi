@@ -4,7 +4,7 @@ import os
 import re
 import subprocess
 
-from .base import AppiObject
+from .base import constant, AppiObject
 from .base.exception import PortageError
 from .conf import Repository
 from .version import Version
@@ -162,7 +162,7 @@ class Ebuild(AppiObject):
         """Execute the ebuild file and export ebuild-related variables to
         `self._vars` dictionnary.
         """
-        bin_path = '/usr/lib/portage/python3.5'  # TODO properly get this path
+        bin_path = constant.BIN_PATH
         cmd = ['bash', '-c', 'source {}/ebuild.sh && set'.format(bin_path)]
         repo_locations = (str(l) for l in Repository.list_locations())
         env = dict(
