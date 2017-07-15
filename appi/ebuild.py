@@ -162,20 +162,21 @@ class Ebuild(AppiObject):
         """Execute the ebuild file and export ebuild-related variables to
         `self._vars` dictionnary.
         """
-        bin_path = '/usr/lib/portage/python3.5'
+        bin_path = '/usr/lib/portage/python3.5'  # TODO properly get this path
         cmd = ['bash', '-c', 'source {}/ebuild.sh && set'.format(bin_path)]
         repo_locations = (str(l) for l in Repository.list_locations())
         env = dict(
             os.environ,
-            PORTAGE_PIPE_FD='2',
+            PORTAGE_PIPE_FD='2',  # TODO How to set something else than stderr?
             PORTAGE_ECLASS_LOCATIONS=' '.join(repo_locations),
             EBUILD=self.path,
-            EBUILD_PHASE='depend',
+            EBUILD_PHASE='depend',  # TODO Is this an ideal phase?
             PORTAGE_BIN_PATH=bin_path,
-            PORTAGE_TMPDIR='/var/tmp',
+            PORTAGE_TMPDIR='/var/tmp',  # TODO properly get this path
         )
         env.update(self.get_ebuild_env())
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, env=env)
+        proc = subprocess.Popen(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, env=env)
 
         raw_vars = {}
         ebuild_vars = [
