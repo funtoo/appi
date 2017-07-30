@@ -3,6 +3,7 @@
 from pathlib import Path
 import re
 
+from ..base import AppiObject
 from ..base.constant import PORTAGE_DIR, CONF_DIR
 
 __all__ = [
@@ -10,7 +11,7 @@ __all__ = [
 ]
 
 
-class Profile:
+class Profile(AppiObject):
 
     directory = Path(PORTAGE_DIR, 'profiles')
 
@@ -40,7 +41,23 @@ class Profile:
                     path = base_dir / path
                 else:
                     path = Path(path)
-                profiles.extend(cls._get_parent_profiles(path))
-                profiles.append(path.resolve())
+                path = path.resolve()
+                new_profiles = [
+                    x for x in cls._get_parent_profiles(path)
+                    if x not in profiles
+                ]
+                profiles.extend(new_profiles)
+                profile = cls(path)
+                if profile not in profiles:
+                    profiles.append(profile)
 
         return profiles
+
+    def __init__(self, path):
+        self.path = Path(path).resolve()
+
+    def __eq__(self, profile):
+        return self.path == profile.path
+
+    def __str__(self):
+        return str(self.path)
