@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 # Distributed under the terms of the GNU General Public License v2
+import os
 from pathlib import Path
 import re
+import subprocess
 
 from ..base import AppiObject
 from ..base.constant import PORTAGE_DIR, CONF_DIR
@@ -52,6 +54,40 @@ class Profile(AppiObject):
                     profiles.append(profile)
 
         return profiles
+
+    @classmethod
+    def _parse_make_conf_file(cls, path, context=None):
+        context = (context or {}).copy()
+        cmd = ['bash', '-c', 'source {} && set'.format(path)]
+        env = dict(os.environ, **context)
+        proc = subprocess.Popen(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, env=env)
+
+        raw_vars = {}
+        with Path(path).open('r') as f:
+            interesting_vars = set(re.findall(
+                r'^\s*(?:export\s+)?([a-z][a-z0-9_]*)=', f.read(), re.M | re.I
+            ))
+        for line in proc.stdout:
+            key, _, value = line.partition(b'=')
+            key = key.decode('ascii')
+            if key in interesting_vars:
+                raw_vars[key] = value
+        proc.communicate()
+        context.update(cls._clean_raw_vars(raw_vars))
+        return context
+
+    @classmethod
+    def _clean_raw_vars(cls, raw_vars):
+        """Extract actual values from raw variables values retrieved with bash
+        'set' command.
+        """
+        cleaned_vars = {}
+        for k, v in raw_vars.items():
+            v = re.sub(rb'\n$', b'', v)
+            v = re.sub(rb"^\$?'(.*)'$", rb'\1', v)
+            cleaned_vars[k] = v.decode('unicode_escape')
+        return cleaned_vars
 
     def __init__(self, path):
         self.path = Path(path).resolve()

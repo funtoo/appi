@@ -179,11 +179,11 @@ class Ebuild(AppiObject):
             cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, env=env)
 
         raw_vars = {}
-        ebuild_vars = [
+        ebuild_vars = {
             'EAPI', 'DESCRIPTION', 'HOMEPAGE', 'SRC_URI', 'LICENSE', 'SLOT',
             'KEYWORDS', 'IUSE', 'REQUIRED_USE', 'RESTRICT', 'DEPEND',
             'RDEPEND', 'PDEPEND', 'S', 'PROPERTIES', 'DOCS', 'HTML_DOCS',
-        ]
+        }
         for line in proc.stdout:
             key, _, value = line.partition(b'=')
             key = key.decode('ascii')
