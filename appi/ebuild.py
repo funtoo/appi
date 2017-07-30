@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 # Distributed under the terms of the GNU General Public License v2
 import os
+from pathlib import Path
 import re
-import subprocess
 
 from .base import constant, AppiObject
 from .base.exception import PortageError
 from .conf import Repository
+from .util import extract_bash_file_vars
 from .version import Version
 
 __all__ = [
@@ -146,48 +147,25 @@ class Ebuild(AppiObject):
             # EROOT='',
         )
 
-    @classmethod
-    def _clean_ebuild_raw_vars(cls, raw_vars):
-        """Extract actual values from raw variables values retrieved with bash
-        'set' command.
-        """
-        cleaned_vars = {}
-        for k, v in raw_vars.items():
-            v = re.sub(rb'\n$', b'', v)
-            v = re.sub(rb"^\$?'(.*)'$", rb'\1', v)
-            cleaned_vars[k] = v.decode('unicode_escape')
-        return cleaned_vars
-
     def _parse_ebuild_file(self):
         """Execute the ebuild file and export ebuild-related variables to
         `self._vars` dictionnary.
         """
-        bin_path = constant.BIN_PATH
-        cmd = ['bash', '-c', 'source {}/ebuild.sh && set'.format(bin_path)]
+        path = Path(constant.BIN_PATH, 'ebuild.sh')
         repo_locations = (str(l) for l in Repository.list_locations())
-        env = dict(
-            os.environ,
-            PORTAGE_PIPE_FD='2',  # TODO How to set something else than stderr?
-            PORTAGE_ECLASS_LOCATIONS=' '.join(repo_locations),
-            EBUILD=self.path,
-            EBUILD_PHASE='depend',  # TODO Is this an ideal phase?
-            PORTAGE_BIN_PATH=bin_path,
-            PORTAGE_TMPDIR='/var/tmp',  # TODO properly get this path
-        )
-        env.update(self.get_ebuild_env())
-        proc = subprocess.Popen(
-            cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, env=env)
-
-        raw_vars = {}
         ebuild_vars = {
             'EAPI', 'DESCRIPTION', 'HOMEPAGE', 'SRC_URI', 'LICENSE', 'SLOT',
             'KEYWORDS', 'IUSE', 'REQUIRED_USE', 'RESTRICT', 'DEPEND',
             'RDEPEND', 'PDEPEND', 'S', 'PROPERTIES', 'DOCS', 'HTML_DOCS',
         }
-        for line in proc.stdout:
-            key, _, value = line.partition(b'=')
-            key = key.decode('ascii')
-            if key in ebuild_vars:
-                raw_vars[key] = value
-        proc.communicate()
-        self._vars = self._clean_ebuild_raw_vars(raw_vars)
+        context = dict(
+            os.environ,
+            PORTAGE_PIPE_FD='2',  # TODO How to set something else than stderr?
+            PORTAGE_ECLASS_LOCATIONS=' '.join(repo_locations),
+            EBUILD=self.path,
+            EBUILD_PHASE='depend',  # TODO Is this an ideal phase?
+            PORTAGE_BIN_PATH=constant.BIN_PATH,
+            PORTAGE_TMPDIR='/var/tmp',  # TODO properly get this path
+        )
+        context.update(self.get_ebuild_env())
+        self._vars = extract_bash_file_vars(path, ebuild_vars, context)
