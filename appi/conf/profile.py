@@ -72,7 +72,11 @@ class Profile(AppiObject):
             if path.exists():
                 context = Profile._parse_make_conf_file(path, context)
         path = Path(constant.CONF_DIR, 'make.conf')
-        return Profile._parse_make_conf_file(path, context)
+        profile_only_vars = context.get('PROFILE_ONLY_VARIABLES', '').split()
+        backup_vars = {k: context.get(k, '') for k in profile_only_vars}
+        context = Profile._parse_make_conf_file(path, context)
+        context.update(backup_vars)
+        return context
 
     def __init__(self, path):
         self.path = Path(path).resolve()
