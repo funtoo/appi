@@ -54,14 +54,36 @@ class Profile(AppiObject):
         return profiles
 
     @classmethod
+    def _sanitize_incremental_var(cls, new_value, old_value):
+        flags = set(old_value.split())
+        for flag in new_value.split():
+            if flag[0] == '-':
+                try:
+                    flags.remove(flag[1:])
+                except KeyError:
+                    pass
+            else:
+                flags.add(flag)
+        return ' '.join(sorted(flags))
+
+    @classmethod
     def _parse_make_conf_file(cls, path, context=None):
         context = context or {}
+        incrementals = {
+            k: v for k, v in context.items()
+            if k in constant.INCREMENTAL_PORTAGE_VARS
+        }
         with open(str(path), 'r') as f:
             output_vars = set(re.findall(
                 r'^\s*(?:export\s+)?([a-z][a-z0-9_]*)=', f.read(), re.M | re.I
             ))
-        return dict(
+        context = dict(
             context, **extract_bash_file_vars(path, output_vars, context))
+        for incremental in constant.INCREMENTAL_PORTAGE_VARS:
+            context[incremental] = cls._sanitize_incremental_var(
+                context.get(incremental, ''), incrementals.get(incremental, '')
+            )
+        return context
 
     @classmethod
     def get_system_make_conf(cls):
