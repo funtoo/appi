@@ -5,6 +5,7 @@ import re
 
 from ..base import AppiObject, constant
 from ..util import extract_bash_file_vars
+from .repository import Repository
 
 __all__ = [
     'Profile',
@@ -33,10 +34,12 @@ class Profile(AppiObject):
                 path = path.strip()
                 if not path:
                     continue
-                if path.startswith('gentoo:'):
-                    path = cls.directory / path.split(':', 1)[1]
-                elif path == ':base':
+                if path == ':base':
                     path = cls.directory / 'base'
+                elif ':' in path:
+                    repo_name, path = path.split(':', 1)
+                    repo = Repository.get(repo_name)
+                    path = repo.location / 'profiles' / path
                 elif path[0] != '/':
                     path = base_dir / path
                 else:
@@ -55,8 +58,12 @@ class Profile(AppiObject):
 
     @classmethod
     def _sanitize_incremental_var(cls, new_value, old_value):
-        flags = set(old_value.split())
-        for flag in new_value.split():
+        if isinstance(old_value, str):
+            old_value = old_value.split()
+        if isinstance(new_value, str):
+            new_value = new_value.split()
+        flags = set(old_value)
+        for flag in new_value:
             if flag[0] == '-':
                 try:
                     flags.remove(flag[1:])
@@ -65,6 +72,45 @@ class Profile(AppiObject):
             else:
                 flags.add(flag)
         return ' '.join(sorted(flags))
+
+    @classmethod
+    def _expand_use(cls, context):
+        use = set(context.get('USE', '').split())
+        use_expand = set(context.get('USE_EXPAND', '').split())
+        prefix_re = re.compile(r'^(?P<prefix>{})_(?P<flag>.+)$'.format(
+            '|'.join((x.lower() for x in use_expand))
+        ))
+        for flag in use:
+            negate = flag[0] == '-'
+            if negate:
+                flag = flag[1:]
+            m = prefix_re.match(flag)
+            if not m:
+                continue
+            name = m.group('prefix').upper()
+            value = m.group('flag')
+            if negate:
+                value = '-{}'.format(value)
+            context[name] = cls._sanitize_incremental_var(
+                value, context.get(name, ''))
+        return context
+
+    @classmethod
+    def _expand_to_use(cls, context):
+        use = set(context.get('USE', '').split())
+        use_expand = set(context.get('USE_EXPAND', '').split())
+        unprefixed = context.get('USE_EXPAND_UNPREFIXED', '').split()
+        for prefix in use_expand:
+            value = set(context.get(prefix, '').split())
+            if not value:
+                continue
+            if prefix not in unprefixed:
+                value = set('{}_{}'.format(prefix.lower(), v) for v in value)
+            use = value.union({
+                u for u in use
+                if not u.startswith('{}_'.format(prefix).lower())
+            })
+        return ' '.join(sorted(use))
 
     @classmethod
     def _parse_make_conf_file(cls, path, context=None):
@@ -79,10 +125,12 @@ class Profile(AppiObject):
             ))
         context = dict(
             context, **extract_bash_file_vars(path, output_vars, context))
+        # context = cls._expand_use(context)
         for incremental in constant.INCREMENTAL_PORTAGE_VARS:
             context[incremental] = cls._sanitize_incremental_var(
                 context.get(incremental, ''), incrementals.get(incremental, '')
             )
+        context['USE'] = cls._expand_to_use(context)
         return context
 
     @classmethod
