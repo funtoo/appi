@@ -57,12 +57,15 @@ class ConfMetaclass(type):
             return None
         return confs[0]
 
-    def get_conf_files(self):
-        path = self.get_conf_path()
-        if path.is_dir():
-            return self.get_conf_path().iterdir()
-        else:
-            return [path]
+    def get_conf_files(self, _paths=None):
+        paths = _paths or [self.get_conf_path()]
+        expanded_paths = []
+        for path in paths:
+            if path.is_dir():
+                expanded_paths.extend(self.get_conf_files(path.iterdir()))
+            else:
+                expanded_paths.append(path)
+        return expanded_paths
 
     def get_conf_path(self):
         return Path(CONF_DIR, self.conf_file)
