@@ -6,7 +6,7 @@ import re
 
 from .base import constant, AppiObject
 from .base.exception import PortageError
-from .conf import Repository
+from .conf import Repository, Profile
 from .util import extract_bash_file_vars
 from .version import Version
 
@@ -151,6 +151,7 @@ class Ebuild(AppiObject):
         """Execute the ebuild file and export ebuild-related variables to
         `self._vars` dictionnary.
         """
+        make_conf = Profile.get_system_make_conf()
         path = Path(constant.BIN_PATH, 'ebuild.sh')
         repo_locations = (str(l) for l in Repository.list_locations())
         ebuild_vars = {
@@ -165,7 +166,7 @@ class Ebuild(AppiObject):
             EBUILD=self.path,
             EBUILD_PHASE='depend',  # TODO Is this an ideal phase?
             PORTAGE_BIN_PATH=constant.BIN_PATH,
-            PORTAGE_TMPDIR='/var/tmp',  # TODO properly get this path
+            PORTAGE_TMPDIR=make_conf['PORTAGE_TMPDIR'],
         )
         context.update(self.get_ebuild_env())
         self._vars = extract_bash_file_vars(path, ebuild_vars, context)

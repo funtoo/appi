@@ -74,28 +74,6 @@ class Profile(AppiObject):
         return ' '.join(sorted(flags))
 
     @classmethod
-    def _expand_use(cls, context):
-        use = set(context.get('USE', '').split())
-        use_expand = set(context.get('USE_EXPAND', '').split())
-        prefix_re = re.compile(r'^(?P<prefix>{})_(?P<flag>.+)$'.format(
-            '|'.join((x.lower() for x in use_expand))
-        ))
-        for flag in use:
-            negate = flag[0] == '-'
-            if negate:
-                flag = flag[1:]
-            m = prefix_re.match(flag)
-            if not m:
-                continue
-            name = m.group('prefix').upper()
-            value = m.group('flag')
-            if negate:
-                value = '-{}'.format(value)
-            context[name] = cls._sanitize_incremental_var(
-                value, context.get(name, ''))
-        return context
-
-    @classmethod
     def _expand_to_use(cls, context):
         use = set(context.get('USE', '').split())
         use_expand = set(context.get('USE_EXPAND', '').split())
@@ -125,7 +103,6 @@ class Profile(AppiObject):
             ))
         context = dict(
             context, **extract_bash_file_vars(path, output_vars, context))
-        # context = cls._expand_use(context)
         for incremental in constant.INCREMENTAL_PORTAGE_VARS:
             context[incremental] = cls._sanitize_incremental_var(
                 context.get(incremental, ''), incrementals.get(incremental, '')
