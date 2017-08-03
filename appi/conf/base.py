@@ -12,6 +12,7 @@ __all__ = [
 
 
 class ConfMetaclass(type):
+    """Metaclass for Conf. See `appi.conf.base.Conf`."""
 
     def __getitem__(self, key):
         self._fetch_instances()
@@ -40,7 +41,9 @@ class ConfMetaclass(type):
             self.handle_default_section(default_section)
 
     def handle_default_section(self, section):
-        pass
+        """Override this method to implement the behavior when the default
+        section of the conf file is read.
+        """
 
     def list(self, **kwargs):
         self._fetch_instances()
@@ -57,23 +60,45 @@ class ConfMetaclass(type):
             return None
         return confs[0]
 
-    def get_conf_files(self):
-        path = self.get_conf_path()
-        if path.is_dir():
-            return self.get_conf_path().iterdir()
-        else:
-            return [path]
+    def get_conf_files(self, paths=None):
+        paths = paths or [self.get_conf_path()]
+        expanded_paths = []
+        for path in paths:
+            if path.is_dir():
+                expanded_paths.extend(self.get_conf_files(path.iterdir()))
+            else:
+                expanded_paths.append(path)
+        return expanded_paths
 
     def get_conf_path(self):
         return Path(CONF_DIR, self.conf_file)
 
 
 class Conf(AppiObject, metaclass=ConfMetaclass):
+    """Interface to access data in standard conf files.
+
+    Each subclass represent a specific conf file.
+    Each instance represent a section of the conf file.
+
+    Sections can be accessed as if Conf was a dict. For instance, if
+    Foobar is a subclass of Conf, Foobar['baz'] is a Foobar instance
+    representing the 'baz' section of the conf file described by the Foobar
+    class.
+    """
 
     conf_file = None
-    supported_attributes = {}
+    """File to parse, relative to /etc/portage/. May be a directory to
+    recursively concatenate all files in it.
+    """
+
+    supported_fields = {}
+    """Dictionary mapping field names to a `Field` instance describing how to
+    handle this field. Field names not in this dictionary will be ignored.
+    See `appi.conf.base.Field`.
+    """
 
     _instances = {}
+    """Store conf file sections."""
 
     def __init__(self, name, section):
         self.name = name

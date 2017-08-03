@@ -3,14 +3,17 @@
 import platform
 
 __all__ = [
-    'CONF_DIR', 'BIN_PATH',
+    'BIN_PATH', 'CONF_DIR', 'PORTAGE_DIR', 'GLOBAL_CONFIG_PATH',
+    'INCREMENTAL_PORTAGE_VARS',
 ]
 
 python_version = '.'.join(platform.python_version_tuple()[:2])
+BIN_PATH = '/usr/lib/portage/python{}'.format(python_version)
+# TODO find a better way to fill this out.
+# Cf. GitLab#12
 
 CONF_DIR = '/etc/portage'
 PORTAGE_DIR = '/usr/portage'
-BIN_PATH = '/usr/lib/portage/python{}'.format(python_version)
 GLOBAL_CONFIG_PATH = '/usr/share/portage/config'
 INCREMENTAL_PORTAGE_VARS = [
     'ACCEPT_KEYWORDS', 'CONFIG_PROTECT', 'CONFIG_PROTECT_MASK', 'FEATURES',

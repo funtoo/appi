@@ -13,16 +13,29 @@ __all__ = [
 
 
 class Profile(AppiObject):
+    """A portage profile.
+
+    Currently, this only allows to retrieve the system make.conf. By "system",
+    it is meant: after parsing make.globals, profiles make.defaults and
+    /etc/portage/make.conf.
+
+    Across future versions, features will be implemented to retrieve all
+    information contained in profile, separately or all profiles aggregated.
+    """
 
     directory = Path(constant.PORTAGE_DIR, 'profiles')
 
     @classmethod
     def list(cls):
+        """Return the list of all enabled profiles.
+        Sorted in the order they will be parsed in the chain.
+        """
         base_dir = Path(constant.CONF_DIR, 'make.profile')
         return cls._get_parent_profiles(base_dir)
 
     @classmethod
     def _get_parent_profiles(cls, base_dir):
+        """Return the list of parent profiles given a profile path."""
         profiles_parent = base_dir / 'parent'
         profiles = []
         if not profiles_parent.exists():
@@ -58,23 +71,25 @@ class Profile(AppiObject):
 
     @classmethod
     def _sanitize_incremental_var(cls, new_value, old_value):
+        """Return alphabetically sorted useflags.
+        Negated useflags from `new_value` are removed from old_value.
+        Other useflags from `new_value` are appended to old_value.
+        `new_value` and `old_value` may be either iterables or strings.
+        """
         if isinstance(old_value, str):
             old_value = old_value.split()
         if isinstance(new_value, str):
             new_value = new_value.split()
         flags = set(old_value)
-        for flag in new_value:
-            if flag[0] == '-':
-                try:
-                    flags.remove(flag[1:])
-                except KeyError:
-                    pass
-            else:
-                flags.add(flag)
-        return ' '.join(sorted(flags))
+        to_remove = set(x[1:] for x in new_value if x[0] == '-')
+        to_append = set(x for x in new_value if x[0] != '-')
+        return ' '.join(sorted(flags.difference(to_remove).union(to_append)))
 
     @classmethod
     def _expand_to_use(cls, context):
+        """Return the new list of useflags after expansion of variables in
+        USE_EXPAND.
+        """
         use = set(context.get('USE', '').split())
         use_expand = set(context.get('USE_EXPAND', '').split())
         unprefixed = context.get('USE_EXPAND_UNPREFIXED', '').split()
@@ -92,6 +107,7 @@ class Profile(AppiObject):
 
     @classmethod
     def _parse_make_conf_file(cls, path, context=None):
+        """Read a make.conf-like file and return an updated context."""
         context = context or {}
         incrementals = {
             k: v for k, v in context.items()
@@ -112,6 +128,7 @@ class Profile(AppiObject):
 
     @classmethod
     def get_system_make_conf(cls):
+        """Return a dict of system make.conf variables."""
         path = Path(constant.GLOBAL_CONFIG_PATH, 'make.globals')
         context = cls._parse_make_conf_file(path)
         for profile in cls.list():
@@ -126,6 +143,7 @@ class Profile(AppiObject):
         return context
 
     def __init__(self, path):
+        """Create a Profile object from a profile path."""
         self.path = Path(path).resolve()
 
     def __eq__(self, profile):

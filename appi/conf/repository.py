@@ -8,6 +8,7 @@ __all__ = [
 
 
 class Repository(Conf):
+    """A portage repository."""
 
     conf_file = 'repos.conf'
     supported_fields = {
@@ -23,9 +24,11 @@ class Repository(Conf):
 
     @classmethod
     def get_main_repository(cls):
+        """Return the main repository."""
         cls._fetch_instances()
         return cls._main_repository
 
     @classmethod
     def list_locations(cls):
+        """Return all repository locations as a generator."""
         return (repo.location for repo in cls.list())

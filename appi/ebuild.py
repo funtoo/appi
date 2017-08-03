@@ -123,6 +123,7 @@ class Ebuild(AppiObject):
     def get_ebuild_env(self):
         """Return a dictionnary of ebuild predefined read-only variables."""
         # TODO How to fill commented out variables? Should it be filled?
+        # Cf. GitLab#12
         version = self.get_version()
         upstream_version = str(version.get_upstream_version())
         revision = 'r' + (version.revision or '0')
@@ -162,9 +163,11 @@ class Ebuild(AppiObject):
         context = dict(
             os.environ,
             PORTAGE_PIPE_FD='2',  # TODO How to set something else than stderr?
+                                  # Cf. GitLab#12
             PORTAGE_ECLASS_LOCATIONS=' '.join(repo_locations),
             EBUILD=self.path,
             EBUILD_PHASE='depend',  # TODO Is this an ideal phase?
+                                    # Cf. GitLab#12
             PORTAGE_BIN_PATH=constant.BIN_PATH,
             PORTAGE_TMPDIR=make_conf['PORTAGE_TMPDIR'],
         )
