@@ -25,6 +25,10 @@ class ConfMetaclass(type):
             return default
 
     def _fetch_instances(self):
+        """Populate `self._instances` if empty.
+        Parse conf file and extract sections as `Conf` instances into
+        `Conf._instances`.
+        """
         if self._instances:
             return
         default_section = None
@@ -35,8 +39,8 @@ class ConfMetaclass(type):
                 if name == 'DEFAULT':
                     if section:
                         default_section = section
-                    continue
-                self._instances[name] = self(name, section)
+                else:
+                    self._instances[name] = self(name, section)
         if default_section:
             self.handle_default_section(default_section)
 
@@ -46,6 +50,11 @@ class ConfMetaclass(type):
         """
 
     def list(self, **kwargs):
+        """Return a list of sections of the conf file as `Conf` instances.
+        Keyword arguments may be passed to filter fields. For instance,
+        Conf.list(foobar='baz'), will only return sections that have a foobar
+        field equal to "baz".
+        """
         self._fetch_instances()
         confs = self._instances.values()
         if kwargs:
@@ -53,6 +62,11 @@ class ConfMetaclass(type):
         return confs
 
     def find(self, **kwargs):
+        """Return the only section which fields match the given keyword
+        arguments.
+        Return None if no section matched.
+        Raise ValueError if more than one section match.
+        """
         confs = self.list(**kwargs)
         if len(confs) > 1:
             raise ValueError
@@ -60,8 +74,12 @@ class ConfMetaclass(type):
             return None
         return confs[0]
 
-    def get_conf_files(self, paths=None):
-        paths = paths or [self.get_conf_path()]
+    def get_conf_files(self, _paths=None):
+        """Return a list of paths of files involved in the requested conf.
+        `_paths` is only used innerly to recurse over subdirectories, it should
+        never be passed elsewhere. Consider this method takes no argument.
+        """
+        paths = _paths or [self.get_conf_path()]
         expanded_paths = []
         for path in paths:
             if path.is_dir():
@@ -71,6 +89,7 @@ class ConfMetaclass(type):
         return expanded_paths
 
     def get_conf_path(self):
+        """Return the full absolute path of the conf file."""
         return Path(CONF_DIR, self.conf_file)
 
 
@@ -111,6 +130,9 @@ class Conf(AppiObject, metaclass=ConfMetaclass):
         return self.name
 
     def matches(self, **kwargs):
+        """Return True if all fields passed as keyword arguments match the
+        values of this section fields. False otherwise.
+        """
         for k, v in kwargs.items():
             if (k in self.supported_fields and
                     self.supported_fields[k].to_python(v) != getattr(self, k)):
@@ -119,6 +141,12 @@ class Conf(AppiObject, metaclass=ConfMetaclass):
 
 
 class Field(AppiObject):
+    """A field of a section of a conf file.
+    Instances describe the name of the field, its default value and whether it
+    is required.
+    Field subclasses describe how values of that field should be represented in
+    python through the `to_python()` method.
+    """
 
     def __init__(self, name=None, **kwargs):
         self.name = name
@@ -135,6 +163,8 @@ class Field(AppiObject):
 
 
 class PathField(Field):
+    """A field which python reprsentation is a `pathlib.Path`."""
 
     def to_python(self, value):
+        value = super().to_python(value)
         return Path(value)
