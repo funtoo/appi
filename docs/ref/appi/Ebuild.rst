@@ -45,22 +45,30 @@ Attributes
 - **version** (``str``) The package version
 - **repository** (:ref:`appi.conf.Repository <appi.conf.Repository>`) The package repository
   if available, ``None`` otherwise
+- **location** (``pathlib.Path``) The path of the ebuild file
+- **useflags** (``set``) The set of useflags supported by this ebuild
+- **slot** (``str``) The slot of the package
+- **subslot** (``str``) The subslot of the package if any, ``None`` otherwise
+- **vars** (``dict``) A dictionnary containing ebuild raw variables such as ``HOMEPAGE``,
+  ``LICENSE``, ``DESCRIPTION`` and ``EAPI``.
 
 Examples
 ~~~~~~~~
 
 .. code-block:: python
 
-    >>> e = appi.Ebuild('/usr/portage/www-client/brave/brave-0.12.15.ebuild')
+    >>> e = appi.Ebuild('/usr/portage/app-editors/vim-core/vim-core-8.0.0386.ebuild')
     >>> e.category
-    'www-client'
+    'app-editors'
     >>> e.package
-    'brave'
+    'vim-core'
     >>> e.version
-    '0.12.15'
+    '8.0.0386'
     >>> e.repository
     <Repository 'gentoo'>
-    >>> f = appi.Ebuild('/tmp/www-client/brave/brave-0.12.15.ebuild')
+    >>> e.useflags
+    {'acl', 'minimal', 'nls'}
+    >>> f = appi.Ebuild('/tmp/app-editors/vim-core/vim-core-8.0.0386.ebuild')
     >>> f.repository
     >>>
 
@@ -114,16 +122,16 @@ Examples
 .. code-block:: python
 
     >>> e = appi.Ebuild('/usr/portage/media-gfx/blender/blender-2.72b-r4.ebuild')
-    >>> e.matches_atom(QueryAtom('=media-gfx/blender-2.72b-r4'))
+    >>> e.matches_atom(appi.QueryAtom('=media-gfx/blender-2.72b-r4'))
     True
-    >>> e.matches_atom(QueryAtom('media-gfx/gimp'))
+    >>> e.matches_atom(appi.QueryAtom('media-gfx/gimp'))
     False
-    >>> e.matches_atom(QueryAtom('~media-gfx/blender-2.72b'))
+    >>> e.matches_atom(appi.QueryAtom('~media-gfx/blender-2.72b'))
     True
-    >>> e.matches_atom(QueryAtom('>media-gfx/blender-2.72'))
+    >>> e.matches_atom(appi.QueryAtom('>media-gfx/blender-2.72'))
     True
-    >>> e.matches_atom(QueryAtom('<=media-gfx/blender-2.72'))
+    >>> e.matches_atom(appi.QueryAtom('<=media-gfx/blender-2.72'))
     False
-    >>> e.matches_atom(QueryAtom('=media-gfx/blender-2*'))
+    >>> e.matches_atom(appi.QueryAtom('=media-gfx/blender-2*'))
     True
     >>>
