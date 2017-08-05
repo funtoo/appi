@@ -136,6 +136,12 @@ class BaseAtom(AppiObject):
         """Return True if this atom matches at least one existing ebuild."""
         return bool(self.list_matching_ebuilds())
 
+    def list_possible_useflags(self):
+        """Return the set of useflags supported by at least one of the
+        matching ebuilds.
+        """
+        return set.union(*(e.useflags for e in self.list_matching_ebuilds()))
+
 
 class DependAtom(BaseAtom):
     """An atom used in ebuild dependencies."""

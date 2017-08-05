@@ -120,6 +120,11 @@ class Ebuild(AppiObject):
             self._parse_ebuild_file()
         return self._vars
 
+    @property
+    def useflags(self):
+        """The set of useflags supported by this ebuild according to IUSE."""
+        return set(re.findall('[+-]?([^\s]+)', self.vars['IUSE']))
+
     def get_ebuild_env(self):
         """Return a dictionnary of ebuild predefined read-only variables."""
         # TODO How to fill commented out variables? Should it be filled?
