@@ -124,8 +124,6 @@ matches_atom(atom) -> ``bool``
 
 Return ``True`` if the ebuild matches the given ``atom``.
 
-.. warning:: This method still lacks SLOT check. It should be implemented in version ``0.1``.
-
 Examples
 ~~~~~~~~
 
@@ -144,4 +142,11 @@ Examples
     False
     >>> e.matches_atom(appi.QueryAtom('=media-gfx/blender-2*'))
     True
+    >>> f = appi.Ebuild('/usr/portage/dev-lang/python/python-3.4.5.ebuild')
+    >>> f.matches_atom(appi.QueryAtom('dev-lang/python:3.4/3.4m')
+    True
+    >>> f.matches_atom(appi.QueryAtom('dev-lang/python:3.4')
+    True
+    >>> f.matches_atom(appi.QueryAtom('dev-lang/python:3.5')
+    False
     >>>

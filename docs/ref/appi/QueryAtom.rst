@@ -225,14 +225,8 @@ Examples
     >>> appi.QueryAtom('<screen-1', strict=False).list_matching_ebuilds()
     set()
     >>> appi.QueryAtom('dev-lang/python:3.4::gentoo').list_matching_ebuilds()
-    {<Ebuild: 'dev-lang/python-3.4.5::gentoo'>, <Ebuild: 'dev-lang/python-3.6.0::gentoo'>,
-    <Ebuild: 'dev-lang/python-3.5.2::gentoo'>, <Ebuild: 'dev-lang/python-2.7.12::gentoo'>}
+    {<Ebuild: 'dev-lang/python-3.4.5::gentoo'>, <Ebuild: 'dev-lang/python-3.4.6::gentoo'>}
     >>>
-
-.. warning:: As you can see, the last example illustrates that slots are not yet taken into account
-             in ebuilds filtering. It is scheduled in version ``0.1``. See issue `#2`_ if you would
-             like to be informed on progress, or if you want to get involved and help us implement
-             it.
 
 matches_existing_ebuild() -> ``bool``
 -------------------------------------
@@ -254,6 +248,3 @@ Examples
     >>> appi.QueryAtom('screen', strict=False).matches_existing_ebuild()
     True
     >>>
-
-
-.. _#2: https://github.com/apinsard/appi/issues/2

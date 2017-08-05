@@ -47,7 +47,7 @@ class BaseAtom(AppiObject):
         ('package', r'[a-zA-Z0-9+_-]+?'),
         ('version', r'\d+(\.\d+)*[a-z]?(_(alpha|beta|pre|rc|p)\d+)*(-r\d+)?'),
         ('postfix', r'\*'),
-        ('slot', r'\*|=|([0-9a-zA-Z_.-]+(/[0-9a-zA-Z_.-]+)?=?)'),
+        ('slot', r'\*|=|([0-9a-zA-Z_.-]+(/[0-9a-zA-Z_.-]+)?[=*]?)'),
         ('use', r'[-!]?[a-z][a-z0-9_-]*[?=]?(,[-!]?[a-z][a-z0-9_-]*[?=]?)*'),
         ('repository', r'[a-zA-Z0-9_-]+'),
     ]))
@@ -182,6 +182,13 @@ class QueryAtom(BaseAtom):
         r'(:{slot})?(::{repository})?$'
     ).format(**BaseAtom.patterns))
 
+    def __init__(self, atom_string, *args, **kwargs):
+        super().__init__(atom_string, *args, **kwargs)
+        if self.slot and self.slot[-1] == '*':
+            raise AtomError(
+                "{atom} is invalid, '*' slot operator is not acceptable for a "
+                "QueryAtom.", atom_string, code='unexpected_slot_operator')
+
     def __str__(self):
         template = ''
         if self.selector:
@@ -203,6 +210,9 @@ class QueryAtom(BaseAtom):
             slot=self.slot, repository=self.repository)
 
     def get_repository(self):
+        """Return the repository as `Repository` object if provided.
+        Return None otherwise.
+        """
         if not self.repository:
             return None
         return Repository.get(self.repository)

@@ -87,9 +87,7 @@ class Ebuild(AppiObject):
         return Version(self.version)
 
     def matches_atom(self, atom):
-        """Return True if this ebuild matches the given atom.
-        This method still lacks SLOT check.
-        """
+        """Return True if this ebuild matches the given atom."""
         atom_repository = getattr(atom, 'repository', None)
         valid_category = not atom.category or self.category == atom.category
         valid_package = self.package == atom.package
@@ -108,6 +106,12 @@ class Ebuild(AppiObject):
                 selector = '='
             comp_method = Version.selector_to_comp_method[selector]
             if not getattr(v1, comp_method)(v2):
+                return False
+        if atom.slot:
+            m = re.search(r'^(.+?)(?:/(.+?))?(?:[=*])?$', atom.slot)
+            slot = m.group(1)
+            subslot = m.group(2)
+            if slot != self.slot or (subslot and subslot != self.subslot):
                 return False
         return True
 

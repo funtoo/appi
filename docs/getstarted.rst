@@ -121,15 +121,8 @@ Now, would you like to get the list of ebuilds that satisfy this atom? Nothing's
 
     >>> atom = appi.QueryAtom('=dev-lang/python-3*:3.4::gentoo')
     >>> atom.list_matching_ebuilds()
-    {<Ebuild: 'dev-lang/python-3.5.2::gentoo'>, <Ebuild: 'dev-lang/python-3.4.3-r1::gentoo'>, <Ebuild: 'dev-lang/python-3.4.5::gentoo'>}
+    {<Ebuild: 'dev-lang/python-3.4.3-r1::gentoo'>, <Ebuild: 'dev-lang/python-3.4.5::gentoo'>}
     >>>
-
-.. warning:: **Yes, this returns python 3.5.2!** This version of ``appi`` is still
-             experimental and we haven't implemented slot filtering yet.
-
-             This feature is planned in version ``0.1``. See issue `#2`_ if you would like
-             to be informed on progress, or if you want to get involved and help us
-             implement it.
 
 
 Well, this brings us to ebuilds.
@@ -267,6 +260,3 @@ Compare versions
     >>> Version('0.0a-r1').startswith(Version('0.0'))
     True
     >>>
-
-
-.. _#2: https://github.com/apinsard/appi/issues/2
