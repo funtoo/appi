@@ -68,8 +68,18 @@ Examples
     <Repository 'gentoo'>
     >>> e.useflags
     {'acl', 'minimal', 'nls'}
+    >>> e.slot
+    '0'
+    >>> e.subslot
     >>> f = appi.Ebuild('/tmp/app-editors/vim-core/vim-core-8.0.0386.ebuild')
     >>> f.repository
+    >>> g = appi.Ebuild('/usr/portage/dev-lang/python/python-3.5.3.ebuild')
+    >>> g.slot
+    '3.5'
+    >>> g.subslot
+    '3.5m'
+    >>> g.vars['LICENSE']
+    'PSF-2'
     >>>
 
 
