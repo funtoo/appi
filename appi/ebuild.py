@@ -32,16 +32,14 @@ class Ebuild(AppiObject):
         - package
         - version
         - repository
+        - location
+        - useflags
+        - slot
+        - subslot
+        - vars
 
-    This is not yet implemented, but it should also be able to determine some
-    properties defined in the ebuild file:
-
-        - use flags
-        - slots
-        - license
-        - home page
-        - description
-        - ...
+    You can access to more information through the `vars` property, such as the
+    description, the home page, and the license of the ebuild.
     """
 
     path_re = re.compile(
@@ -74,7 +72,7 @@ class Ebuild(AppiObject):
                 code='package_name_mismatch')
 
         self.repository = Repository.find(location=repo_location)
-        self.path = path
+        self.location = Path(path)
 
     def __str__(self):
         template = '{cat}/{pkg}-{ver}'
@@ -125,6 +123,16 @@ class Ebuild(AppiObject):
         """The set of useflags supported by this ebuild according to IUSE."""
         return set(re.findall('[+-]?([^\s]+)', self.vars['IUSE']))
 
+    @property
+    def slot(self):
+        """The slot of the package."""
+        return re.search(r'^(.+?)(?:/(.+))?$', self.vars['SLOT']).group(1)
+
+    @property
+    def subslot(self):
+        """The subslot of the package if any. None otherwise"""
+        return re.search(r'^(.+?)(?:/(.+))?$', self.vars['SLOT']).group(2)
+
     def get_ebuild_env(self):
         """Return a dictionnary of ebuild predefined read-only variables."""
         # TODO How to fill commented out variables? Should it be filled?
@@ -170,7 +178,7 @@ class Ebuild(AppiObject):
             PORTAGE_PIPE_FD='2',  # TODO How to set something else than stderr?
                                   # Cf. GitLab#12
             PORTAGE_ECLASS_LOCATIONS=' '.join(repo_locations),
-            EBUILD=self.path,
+            EBUILD=str(self.location),
             EBUILD_PHASE='depend',  # TODO Is this an ideal phase?
                                     # Cf. GitLab#12
             PORTAGE_BIN_PATH=constant.BIN_PATH,
