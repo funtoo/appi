@@ -8,7 +8,7 @@ __all__ = [
 
 
 class Repository(Conf):
-    """A portage repository."""
+    """An ebuild repository."""
 
     conf_file = 'repos.conf'
     supported_fields = {

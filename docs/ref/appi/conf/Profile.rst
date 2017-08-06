@@ -4,7 +4,7 @@
 ``appi.conf.Profile``
 =====================
 
-A portage profile.
+A `portage profile`_.
 
 Currently, this only allows to retrieve the system ``make.conf``. By "system",
 it is meant: after parsing ``/usr/share/portage/config/make.globals``, profiles
@@ -12,6 +12,8 @@ it is meant: after parsing ``/usr/share/portage/config/make.globals``, profiles
 
 Accross future versions, features will be implemented to retrieve all information
 contained in profiles, separately or all profiles aggregated.
+
+.. _portage profile: https://wiki.gentoo.org/wiki/Profile_(Portage)
 
 
 Profile.list() -> ``list``
