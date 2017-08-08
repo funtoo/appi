@@ -10,4 +10,4 @@
 Error codes
 -----------
 
-- `invalid` (default) - the version number is invalid, no further details
+- ``invalid`` (default) - the version number is invalid, no further details
