@@ -6,6 +6,13 @@ __all__ = [
 
 
 class AppiError(Exception):
+    """Appi base error.
+
+    All errors thrown by appi will inherit this class.
+
+    AppiError will never be raise itself, its only goal is to serve as a
+    catch-all exception for appi errors.
+    """
 
     default_code = 'unknown'
 
@@ -22,4 +29,8 @@ class AppiError(Exception):
 
 
 class PortageError(AppiError):
-    pass
+    """AppiError related to portage.
+
+    This is a catch-all exception for portage-related appi errors. It will
+    never be raised itself.
+    """
