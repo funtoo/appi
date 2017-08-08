@@ -4,7 +4,7 @@
 ``appi.exception.EbuildError``
 ==============================
 
-`:ref:`PortageError <appi.exception.PortageError>` related to an ebuild.
+:ref:`PortageError <appi.exception.PortageError>` related to an ebuild.
 
 
 Error codes

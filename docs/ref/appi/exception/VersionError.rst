@@ -4,7 +4,7 @@
 ``appi.exception.VersionError``
 ===============================
 
-`:ref:`PortageError <appi.exception.PortageError>` related to a package version.
+:ref:`PortageError <appi.exception.PortageError>` related to a package version.
 
 
 Error codes

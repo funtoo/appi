@@ -4,7 +4,7 @@
 ``appi.exception.AtomError``
 ============================
 
-`:ref:`PortageError <appi.exception.PortageError>` related to an atom.
+:ref:`PortageError <appi.exception.PortageError>` related to an atom.
 
 
 Error codes
