@@ -50,7 +50,9 @@ Attributes
 - **slot** (``str``) The slot of the package
 - **subslot** (``str``) The subslot of the package if any, ``None`` otherwise
 - **vars** (``dict``) A dictionnary containing ebuild raw variables such as ``HOMEPAGE``,
-  ``LICENSE``, ``DESCRIPTION`` and ``EAPI``.
+  ``LICENSE``, ``DESCRIPTION`` and ``EAPI``
+- **db_dir** (``pathlib.Path``) The directory where information about this package installation
+  can be found (if it is installed)
 
 Examples
 ~~~~~~~~
@@ -150,3 +152,8 @@ Examples
     >>> f.matches_atom(appi.QueryAtom('dev-lang/python:3.5')
     False
     >>>
+
+is_installed() -> ``bool``
+--------------------------
+
+Return ``True`` if this ebuild is installed. ``False`` otherwise.

@@ -248,3 +248,8 @@ Examples
     >>> appi.QueryAtom('screen', strict=False).matches_existing_ebuild()
     True
     >>>
+
+is_installed() -> ``bool``
+--------------------------
+
+Return ``True`` if any of the matching ebuilds is installed. ``False`` otherwise.
