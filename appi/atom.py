@@ -142,6 +142,15 @@ class BaseAtom(AppiObject):
         """
         return set.union(*(e.useflags for e in self.list_matching_ebuilds()))
 
+    def is_installed(self):
+        """Return True if any of the matching ebuilds is installed.
+        False otherwise.
+        """
+        for ebuild in self.list_matching_ebuilds():
+            if ebuild.is_installed():
+                return True
+        return False
+
 
 class DependAtom(BaseAtom):
     """An atom used in ebuild dependencies."""

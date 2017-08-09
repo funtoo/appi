@@ -137,6 +137,14 @@ class Ebuild(AppiObject):
         """The subslot of the package if any. None otherwise"""
         return re.search(r'^(.+?)(?:/(.+))?$', self.vars['SLOT']).group(2)
 
+    @property
+    def db_dir(self):
+        """The directory where information about this package installation
+        can be found (if it is installed).
+        """
+        dirname = '{}-{}'.format(self.package, self.version)
+        return Path(constant.PACKAGE_DB_PATH) / self.category / dirname
+
     def get_ebuild_env(self):
         """Return a dictionnary of ebuild predefined read-only variables."""
         # TODO How to fill commented out variables? Should it be filled?
@@ -190,3 +198,7 @@ class Ebuild(AppiObject):
         )
         context.update(self.get_ebuild_env())
         self._vars = extract_bash_file_vars(path, ebuild_vars, context)
+
+    def is_installed(self):
+        """Return True if this ebuild is installed. False otherwise."""
+        return self.db_dir.exists()
