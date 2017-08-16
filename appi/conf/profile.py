@@ -23,8 +23,6 @@ class Profile(AppiObject):
     information contained in profile, separately or all profiles aggregated.
     """
 
-    directory = Path(constant.PORTAGE_DIR, 'profiles')
-
     @classmethod
     def list(cls):
         """Return the list of all enabled profiles.
@@ -47,11 +45,12 @@ class Profile(AppiObject):
                 path = path.strip()
                 if not path:
                     continue
-                if path == ':base':
-                    path = cls.directory / 'base'
-                elif ':' in path:
+                if ':' in path:
                     repo_name, path = path.split(':', 1)
-                    repo = Repository.get(repo_name)
+                    if not repo_name:
+                        repo = Repository.get_main_repository()
+                    else:
+                        repo = Repository.get(repo_name)
                     path = repo.location / 'profiles' / path
                 elif path[0] != '/':
                     path = base_dir / path

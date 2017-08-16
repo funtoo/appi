@@ -3,8 +3,8 @@
 import platform
 
 __all__ = [
-    'ROOT', 'BIN_PATH', 'CONF_DIR', 'PORTAGE_DIR', 'GLOBAL_CONFIG_PATH',
-    'PACKAGE_DB_PATH', 'INCREMENTAL_PORTAGE_VARS',
+    'ROOT', 'BIN_PATH', 'CONF_DIR', 'GLOBAL_CONFIG_PATH', 'PACKAGE_DB_PATH',
+    'INCREMENTAL_PORTAGE_VARS',
 ]
 
 ROOT = '/'
@@ -15,7 +15,6 @@ BIN_PATH = ROOT + 'usr/lib/portage/python{}'.format(python_version)
 # Cf. GitLab#12
 
 CONF_DIR = ROOT + 'etc/portage'
-PORTAGE_DIR = ROOT + 'usr/portage'
 GLOBAL_CONFIG_PATH = ROOT + 'usr/share/portage/config'
 PACKAGE_DB_PATH = ROOT + 'var/db/pkg'
 
