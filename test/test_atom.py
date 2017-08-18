@@ -139,6 +139,7 @@ class TestGetVersion(TestCase, metaclass=TestGetVersionMetaclass):
         ('dev-lang/python:3.4', None),
         ('=dev-lang/python-3*', '3'),
         ('=x11-libs/gtk+-2.4m_beta3*', '2.4m_beta3'),
+        ('=virtual/perl-File-Path-2.120.100_rc-r1', '2.120.100_rc-r1'),
         ('~media-libs/speex-1.2_rc1', '1.2_rc1'),
         ('=sys-kernel/vanilla-sources-4.8.10:4.8.10', '4.8.10'),
     ]
@@ -257,6 +258,7 @@ class TestQueryAtomValidity(TestCase, metaclass=TestQueryAtomValidityMetaclass):
         ('package', False), ('dev-lang/python', True), ('~dev-python/ipython-5.4.0', True),
         ('=x11-libs/qtile-0.10.6', True), ('=toto-3.14*', False),
         ('=x11-libs/qtile-0.10.6::sapher', True), ('=toto-3.14*:3.14::gentoo', False),
+        ('=virtual/toto-0_beta_alpha-r0', True),
     ]
 
 

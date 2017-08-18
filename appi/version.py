@@ -33,9 +33,9 @@ class Version(AppiObject):
 
     version_re = re.compile(
         r'^(?P<base>\d+(\.\d+)*)(?P<letter>[a-z]?)'
-        r'(?P<suffix>(_(alpha|beta|pre|rc|p)\d+)*)?(-r(?P<revision>\d+))?$'
+        r'(?P<suffix>(_(alpha|beta|pre|rc|p)\d*)*)?(-r(?P<revision>\d+))?$'
     )
-    suffix_re = re.compile(r'^(?P<name>[a-z]+)(?P<value>\d+)$')
+    suffix_re = re.compile(r'^(?P<name>[a-z]+)(?P<value>\d*)$')
     suffix_values = {'alpha': -4, 'beta': -3, 'pre': -2, 'rc': -1, 'p': 0}
 
     selector_to_comp_method = {
@@ -132,7 +132,7 @@ class Version(AppiObject):
             match = self.suffix_re.match(suffix)
             suffix_tuple += ((
                 self.suffix_values[match.group('name')],
-                int(match.group('value'))
+                int(match.group('value') or '0')
             ),)
         return suffix_tuple
 

@@ -45,7 +45,7 @@ class BaseAtom(AppiObject):
         ('selector', r'>=|<=|<|=|>|~'),
         ('category', r'[a-z0-9]+(-[a-z0-9]+)?'),
         ('package', r'[a-zA-Z0-9+_-]+?'),
-        ('version', r'\d+(\.\d+)*[a-z]?(_(alpha|beta|pre|rc|p)\d+)*(-r\d+)?'),
+        ('version', r'\d+(\.\d+)*[a-z]?(_(alpha|beta|pre|rc|p)\d*)*(-r\d+)?'),
         ('postfix', r'\*'),
         ('slot', r'\*|=|([0-9a-zA-Z_.-]+(/[0-9a-zA-Z_.-]+)?[=*]?)'),
         ('use', r'[-!]?[a-z][a-z0-9_-]*[?=]?(,[-!]?[a-z][a-z0-9_-]*[?=]?)*'),

@@ -80,7 +80,7 @@ class TestInvalidVersion(TestCase, metaclass=TestInvalidVersionMetaclass):
 
     invalid_versions = [
         '1-15', '2.15-12', '3_15', '3.14.bonjour', 'pi', '1-sid', 'funtoo3',
-        '1.0z_gamma3', '2.76_beta', '2.76_beta-1', '3.141-rc', '123-r1_pre3',
+        '1.0z_gamma3', '2.76_beta-1', '3.141-rc', '123-r1_pre3',
     ]
 
 
@@ -117,6 +117,7 @@ class TestGetBaseTuple(TestCase, metaclass=TestTupleMetaclass):
         ('12.3.456.8.90_p0', (12, 3, 456, 8, 90)),
         ('01.02.0141.47.002', (1, .02, .0141, 47, .002)),
         ('005.500.050.505', (5, 500, .05, 505)),
+        ('2.76_beta', (2, 76)),
     ]
 
 
@@ -146,6 +147,7 @@ class TestGetSuffixTuple(TestCase, metaclass=TestTupleMetaclass):
         ('41.2_alpha1', ((-4, 1),)),
         ('412.54_alpha4_beta3_pre2_rc1_p0', ((-4, 4), (-3, 3), (-2, 2), (-1, 1), (0, 0),)),
         ('1_beta3_beta0_alpha5_rc5-r9', ((-3, 3), (-3, 0), (-4, 5), (-1, 5),)),
+        ('2.76_beta', ((-3, 0),)),
     ]
 
 

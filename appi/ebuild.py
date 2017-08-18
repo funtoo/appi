@@ -45,7 +45,7 @@ class Ebuild(AppiObject):
     path_re = re.compile(
         r'^(?P<repo_location>/.*/)'
         r'(?P<category>[^/]+?)/(?P<package>[^/]+?)/(?P<package_check>[^/]+?)-'
-        r'(?P<version>\d+(\.\d+)*[a-z]?(_(alpha|beta|pre|rc|p)\d+)*(-r\d+)?)'
+        r'(?P<version>\d+(\.\d+)*[a-z]?(_(alpha|beta|pre|rc|p)\d*)*(-r\d+)?)'
         r'\.ebuild$'
     )
 
