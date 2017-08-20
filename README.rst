@@ -4,7 +4,7 @@ appi
 
 Another Portage Python Interface
 
-|rtd0.1| |travis|
+|rtd0.1| |ci| |coverage|
 
 Why not `portage`?
 ------------------
@@ -143,5 +143,10 @@ Improving test cases
     :alt: Documentation Status
     :target: http://appi.readthedocs.io/en/0.1/?badge=0.1
 
-.. |travis| image:: https://travis-ci.org/apinsard/appi.svg?branch=0.1
-    :target: https://travis-ci.org/apinsard/appi
+.. |ci| image:: https://gitlab.com/apinsard/appi/badges/0.1/pipeline.svg
+    :alt: Pipeline Status
+    :target: https://gitlab.com/apinsard/appi/commits/0.1
+
+.. |coverage| image:: https://gitlab.com/apinsard/appi/badges/0.1/coverage.svg
+    :alt: Coverage Report
+    :target: https://gitlab.com/apinsard/appi/commits/0.1
