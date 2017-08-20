@@ -8,15 +8,26 @@ test_py34:
   script:
     - TOXENV=py34 tox
 
-# test_py35:
-#   stage: test
-#   script:
-#     - TOXENV=py35 tox
-# 
-# test_py36:
-#   stage: test
-#   script:
-#     - TOXENV=py36 tox
+test_py35:
+  stage: test
+  script:
+    - TOXENV=py35 tox
+
+test_py36:
+  stage: test
+  script:
+    - TOXENV=py36 tox
+
+test_py37:
+  stage: test
+  script:
+    - TOXENV=py37 tox
+
+coverage:
+  stage: test
+  scripts:
+    - TOXENV=coverage tox
+  coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
 
 pep8:
   stage: test

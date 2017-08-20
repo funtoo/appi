@@ -6,4 +6,5 @@
 
 /docs/_build/
 /.tox
+/.coverage
 /appi.egg-info
