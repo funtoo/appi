@@ -25,7 +25,7 @@ test_py37:
 
 coverage:
   stage: test
-  scripts:
+  script:
     - TOXENV=coverage tox
   coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
 
