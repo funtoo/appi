@@ -3,36 +3,10 @@ before_script:
   - python3 --version
   - pip3 install tox
 
-test_py34:
-  stage: test
-  script:
-    - TOXENV=py34 tox
-
-test_py35:
-  stage: test
-  script:
-    - TOXENV=py35 tox
-
-test_py36:
-  stage: test
-  script:
-    - TOXENV=py36 tox
-
-test_py37:
-  stage: test
-  script:
-    - TOXENV=py37 tox
-
-coverage:
-  stage: test
-  script:
-    - TOXENV=coverage tox
-  coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
-
-pep8:
-  stage: test
-  script:
-    - TOXENV=pep8
+stages:
+  - build
+  - test
+  - qa
 
 build:
   stage: build
@@ -43,3 +17,34 @@ docs:
   stage: build
   script:
     - TOXENV=docs
+
+test_py34:
+  stage: test
+  script:
+    - TOXENV=py34 tox
+
+# test_py35:
+#   stage: test
+#   script:
+#     - TOXENV=py35 tox
+# 
+# test_py36:
+#   stage: test
+#   script:
+#     - TOXENV=py36 tox
+# 
+# test_py37:
+#   stage: test
+#   script:
+#     - TOXENV=py37 tox
+
+coverage:
+  stage: qa
+  script:
+    - TOXENV=coverage tox
+  coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
+
+pep8:
+  stage: qa
+  script:
+    - TOXENV=pep8
