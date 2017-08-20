@@ -40,7 +40,7 @@ class TestAtomValidity(TestCase, metaclass=TestAtomValidityMetaclass):
     invalid_atoms = [
         ('package', True), ('=dev-lang/python', False), ('~dev-python/ipython', False),
         ('x11-libs/qtile-0.10.6', False), ('toto-3.14*', False), ('<toto-3.14*', False),
-        ('sys-kernel/vanilla-sources::sapher', False),
+        ('sys-kernel/vanilla-sources::sapher', False), ('~python-3.7-r9999', False),
     ]
     valid_atoms = [
         ('package', False), ('dev-lang/python', True), ('~dev-python/ipython-5.4.0', True),
@@ -219,13 +219,21 @@ class TestMatchesExistingEbuild(TestCase):
     """Need to setup a temporary portage directory for these tests"""
 
 
+class TestListPossibleUseflags(TestCase):
+    """Need to setup a temporary portage directory for these tests"""
+
+
+class TestIsInstalled(TestCase):
+    """Need to setup a temporary portage directory for these tests"""
+
+
 class TestQueryAtomValidityMetaclass(type(TestCase)):
 
     @staticmethod
     def invalid_test_func_wrapper(atom, strict):
         def test_func(self):
             with self.assertRaises(AtomError):
-                DependAtom(atom, strict)
+                QueryAtom(atom, strict)
         return test_func
 
     @staticmethod
@@ -253,12 +261,13 @@ class TestQueryAtomValidity(TestCase, metaclass=TestQueryAtomValidityMetaclass):
     invalid_atoms = [
         ('package', True), ('=dev-lang/python', False), ('~dev-python/ipython', False),
         ('x11-libs/qtile-0.10.6', False), ('toto-3.14*', False), ('<toto-3.14*', False),
+        ('sys-kernel/gentoo-sources:4.8.0*', False),
     ]
     valid_atoms = [
         ('package', False), ('dev-lang/python', True), ('~dev-python/ipython-5.4.0', True),
         ('=x11-libs/qtile-0.10.6', True), ('=toto-3.14*', False),
         ('=x11-libs/qtile-0.10.6::sapher', True), ('=toto-3.14*:3.14::gentoo', False),
-        ('=virtual/toto-0_beta_alpha-r0', True),
+        ('=virtual/toto-0_beta_alpha-r0', True), ('sys-kernel/gentoo-sources:4.8.0=', True),
     ]
 
 

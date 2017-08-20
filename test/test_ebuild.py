@@ -81,22 +81,8 @@ class TestEbuildValidity(TestCase, metaclass=TestEbuildValidityMetaclass):
     ]
 
 
-class TestInvalidEbuildMetaclass(type(TestCase)):
-
-    @staticmethod
-    def test_func_wrapper(ebuild):
-        def test_func(self):
-            with self.assertRaises(EbuildError):
-                Ebuild(ebuild)
-        return test_func
-
-    def __new__(mcs, name, bases, attrs):
-        for ebuild in attrs['invalid_ebuilds']:
-            func_name = 'test_invalid_ebuild_{}'.format(ebuild)
-            test_func = mcs.test_func_wrapper(ebuild)
-            test_func.__name__ = func_name
-            attrs[func_name] = test_func
-        return super().__new__(mcs, name, bases, attrs)
+class TestEbuildStr(TestCase):
+    """Need to setup a temporary portage directory for these tests"""
 
 
 class TestGetVersionMetaclass(type(TestCase)):
@@ -175,4 +161,36 @@ class TestMatchesAtom(TestCase, metaclass=TestMatchesAtomMetaclass):
             'dev-python/python', 'dev-lang/haskell', '~dev-lang/python-3.5.2',
             '>=python-3', '=dev-lang/python-3*',
         ]),
+    ]
+
+
+class TestDbDirMetaclass(type(TestCase)):
+
+    @staticmethod
+    def test_func_wrapper(e, o):
+        def test_func(self):
+            ebuild = Ebuild(e)
+            self.assertEqual(ebuild.db_dir, Path(o))
+        return test_func
+
+    def __new__(mcs, name, bases, attrs):
+        for path, output in attrs['values']:
+            func_name = 'test_db_dir_{}'.format(path)
+            test_func = mcs.test_func_wrapper(path, output)
+            test_func.__name__ = func_name
+            attrs[func_name] = test_func
+        return super().__new__(mcs, name, bases, attrs)
+
+
+class TestDbDir(TestCase, metaclass=TestDbDirMetaclass):
+
+    values = [
+        ('/usr/portage/sys-apps/portage/portage-2.3.8.ebuild',
+         '/var/db/pkg/sys-apps/portage-2.3.8'),
+        ('/usr/portage/foo-bar/foobar/foobar-3.15-r11.ebuild',
+         '/var/db/pkg/foo-bar/foobar-3.15-r11'),
+        ('/var/overlays/toto/dev-db/postgresql/postgresql-10_beta3.ebuild',
+         '/var/db/pkg/dev-db/postgresql-10_beta3'),
+        ('/toto/dev-libs/clang/clang-9.ebuild',
+         '/var/db/pkg/dev-libs/clang-9'),
     ]
