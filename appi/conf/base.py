@@ -154,7 +154,7 @@ class Field(AppiObject):
         self.required = kwargs.get('required', False)
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
     def to_python(self, value):
         if value is None and self.required:
