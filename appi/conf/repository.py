@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Distributed under the terms of the GNU General Public License v2
-from .base import Conf, PathField
+from .base import Conf, PathField, IntegerField, BooleanField
 
 __all__ = [
     'Repository',
@@ -13,6 +13,8 @@ class Repository(Conf):
     conf_file = 'repos.conf'
     supported_fields = {
         'location': PathField(required=True),
+        'priority': IntegerField(default=0),
+        'auto-sync': BooleanField(default=True),
     }
 
     _main_repository = None
@@ -31,4 +33,4 @@ class Repository(Conf):
     @classmethod
     def list_locations(cls):
         """Return all repository locations as a generator."""
-        return (repo.location for repo in cls.list())
+        return (repo['location'] for repo in cls.list())

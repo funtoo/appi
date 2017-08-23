@@ -40,7 +40,7 @@ class ConfMetaclass(type):
                     if section:
                         default_section = section
                 else:
-                    self._instances[name] = self(name, section)
+                    self._instances[name] = self(name, dict(section))
         if default_section:
             self.handle_default_section(default_section)
 
@@ -119,12 +119,16 @@ class Conf(AppiObject, metaclass=ConfMetaclass):
     _instances = {}
     """Store conf file sections."""
 
-    def __init__(self, name, section):
+    def __init__(self, name, fields):
         self.name = name
+        self._fields = fields
         for name, field in self.supported_fields.items():
             field_name = field.name or name
-            value = section.get(field_name, field.default)
-            setattr(self, name, field.to_python(value))
+            value = fields.get(field_name, field.default)
+            self._fields[name] = field.to_python(value)
+
+    def __getitem__(self, key):
+        return self._fields[key]
 
     def __str__(self):
         return self.name
@@ -135,7 +139,7 @@ class Conf(AppiObject, metaclass=ConfMetaclass):
         """
         for k, v in kwargs.items():
             if (k in self.supported_fields and
-                    self.supported_fields[k].to_python(v) != getattr(self, k)):
+                    self.supported_fields[k].to_python(v) != self[k]):
                 return False
         return True
 
@@ -168,3 +172,30 @@ class PathField(Field):
     def to_python(self, value):
         value = super().to_python(value)
         return Path(value)
+
+
+class IntegerField(Field):
+    """A field which python reprsentation is an `int`."""
+
+    def to_python(self, value):
+        value = super().to_python(value)
+        return int(value)
+
+
+class BooleanField(Field):
+    """A field which python reprsentation is a `bool`."""
+
+    def __init__(self, name=None, **kwargs):
+        self.true = kwargs.pop('true', {True, 'true', 'yes'})
+        self.false = kwargs.pop('false', {False, 'false', 'no'})
+        super().__init__(name, **kwargs)
+
+    def to_python(self, value):
+        value = super().to_python(value)
+        if value in self.true:
+            return True
+        elif value in self.false:
+            return False
+        raise ValueError((
+            "The field '{}' does not recognize '{}' as a valid value."
+        ).format(self.name, value))

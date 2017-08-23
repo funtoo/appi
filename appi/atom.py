@@ -125,7 +125,7 @@ class BaseAtom(AppiObject):
             repository = self.get_repository()
             if not repository:
                 return set()
-            locations = [repository.location]
+            locations = [repository['location']]
         else:
             locations = Repository.list_locations()
         paths = reduce(lambda x, y: x+y, (
