@@ -59,7 +59,7 @@ class ConfMetaclass(type):
         confs = self._instances.values()
         if kwargs:
             confs = [c for c in confs if c.matches(**kwargs)]
-        return confs
+        return list(confs)
 
     def find(self, **kwargs):
         """Return the only section which fields match the given keyword
