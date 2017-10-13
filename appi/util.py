@@ -11,7 +11,7 @@ __all__ = [
 def extract_bash_file_vars(path, output_vars, context=None):
     context = context or {}
     proc = subprocess.Popen(
-        ['bash', '-c', 'source {} && set'.format(path)],
+        ['bash', '-c', 'source {} && (set -o posix; set)'.format(path)],
         stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, env=context)
 
     raw_vars = {}
