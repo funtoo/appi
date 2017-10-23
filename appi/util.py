@@ -11,15 +11,17 @@ __all__ = [
 def extract_bash_file_vars(path, output_vars, context=None):
     context = context or {}
     proc = subprocess.Popen(
-        ['bash', '-c', 'source {} && set | grep -E "^\S+=\S"'.format(path)],
+        ['bash', '-c', 'source {} && set'.format(path)],
         stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, env=context)
 
     raw_vars = {}
+    var_re = re.compile('^({})='.format('|'.join(output_vars)))
     for line in proc.stdout:
+        if not var_re.search(line.decode('utf-8')):
+            continue
         key, _, value = line.partition(b'=')
         key = key.decode('ascii')
-        if key in output_vars:
-            raw_vars[key] = value
+        raw_vars[key] = value
 
     proc.communicate()
 
