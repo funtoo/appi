@@ -6,10 +6,10 @@ from setuptools import setup, find_packages
 
 BASE_DIR = Path(__file__).parent
 
-with (BASE_DIR / 'README.rst').open() as readme:
+with (BASE_DIR / 'README.rst').open(encoding='utf-8') as readme:
     README = readme.read()
 
-with (BASE_DIR / 'appi' / '__init__.py').open() as init_file:
+with (BASE_DIR / 'appi' / '__init__.py').open(encoding='utf-8') as init_file:
     pattern = '''^\s*__version__\s*=\s*["']([0-9.]+)["']\s*$'''
     VERSION = re.search(pattern, init_file.read(), re.M).group(1)
 

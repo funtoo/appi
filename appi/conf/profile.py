@@ -39,7 +39,7 @@ class Profile(AppiObject):
         if not profiles_parent.exists():
             return profiles
 
-        with profiles_parent.open('r') as f:
+        with profiles_parent.open('r', encoding='utf-8') as f:
             for path in f.readlines():
                 path = re.sub(r'#.*$', '', path)
                 path = path.strip()
@@ -112,7 +112,7 @@ class Profile(AppiObject):
             k: v for k, v in context.items()
             if k in constant.INCREMENTAL_PORTAGE_VARS
         }
-        with open(str(path), 'r') as f:
+        with open(str(path), 'r', encoding='utf-8') as f:
             output_vars = set(re.findall(
                 r'^\s*(?:export\s+)?([a-z][a-z0-9_]*)=', f.read(), re.M | re.I
             ))
