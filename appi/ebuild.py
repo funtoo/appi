@@ -202,6 +202,6 @@ class Ebuild(AppiObject):
     def is_installed(self):
         """Return True if this ebuild is installed. False otherwise."""
         if self.repository and self.db_dir.exists():
-            with (self.db_dir / 'repository').open() as f:
+            with (self.db_dir / 'repository').open(encoding='utf-8') as f:
                 return f.read().strip() == self.repository.name
         return False
