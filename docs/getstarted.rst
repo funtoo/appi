@@ -185,7 +185,7 @@ Inspect ebuild parts
     '2.0.2-r2'
     >>> e.repository
     <Repository: 'gentoo'>
-    >>> e.repository.location
+    >>> e.repository['location']
     PosixPath('/usr/portage')
     >>>
 
