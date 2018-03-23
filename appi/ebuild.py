@@ -69,8 +69,7 @@ class Ebuild(AppiObject):
             group_dict = match.groupdict()
             for k, v in group_dict.items():
                 setattr(self, k, v)
-            pkg_db_dir = Path(path).parent
-            with (pkg_db_dir / 'repository').open() as f:
+            with (self.db_dir / 'repository').open(encoding='utf-8') as f:
                 repository_name = f.read().strip()
             self.repository = Repository.get(repository_name)
         else:
@@ -228,4 +227,15 @@ class Ebuild(AppiObject):
         if self.repository and self.db_dir.exists():
             with (self.db_dir / 'repository').open(encoding='utf-8') as f:
                 return f.read().strip() == self.repository.name
+        return False
+
+    def is_in_tree(self):
+        """Return True if this ebuild is available in the repository."""
+        if self.repository:
+            location = (
+                self.repository['location'] / self.category / self.package /
+                '{}-{}.ebuild'.format(self.package, self.version)
+            )
+            if location.exists():
+                return True
         return False
