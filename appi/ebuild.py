@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Distributed under the terms of the GNU General Public License v2
+from hashlib import sha1
 import os
 from pathlib import Path
 import re
@@ -48,6 +49,12 @@ class Ebuild(AppiObject):
         r'(?P<version>\d+(\.\d+)*[a-z]?(_(alpha|beta|pre|rc|p)\d*)*(-r\d+)?)'
         r'\.ebuild$'
     )
+    pkg_db_re = re.compile(
+        constant.PACKAGE_DB_PATH + '/'
+        r'(?P<category>[^/]+?)/(?P<package>[^/]+?)'
+        r'-(?P<version>\d+(\.\d+)*[a-z]?(_(alpha|beta|pre|rc|p)\d*)*(-r\d+)?)/'
+        r'.*\.ebuild$'
+    )
 
     def __init__(self, path):
         """Create an Ebuild object from an ebuild path.
@@ -55,23 +62,34 @@ class Ebuild(AppiObject):
         Raise `EbuildError` if the path does not describe a valid ebuild.
         """
         path = str(path)
-        match = self.path_re.match(path)
-        if not match:
-            raise EbuildError("{ebuild} is not a valid ebuild path.", path)
+        if path.startswith(constant.PACKAGE_DB_PATH + '/'):
+            match = self.pkg_db_re.match(path)
+            if not match:
+                raise EbuildError("{ebuild} is not a valid ebuild path.", path)
+            group_dict = match.groupdict()
+            for k, v in group_dict.items():
+                setattr(self, k, v)
+            pkg_db_dir = Path(path).parent
+            with (pkg_db_dir / 'repository').open() as f:
+                repository_name = f.read().strip()
+            self.repository = Repository.get(repository_name)
+        else:
+            match = self.path_re.match(path)
+            if not match:
+                raise EbuildError("{ebuild} is not a valid ebuild path.", path)
+            group_dict = match.groupdict()
+            package_check = group_dict.pop('package_check')
+            repo_location = group_dict.pop('repo_location')
+            for k, v in group_dict.items():
+                setattr(self, k, v)
 
-        group_dict = match.groupdict()
-        package_check = group_dict.pop('package_check')
-        repo_location = group_dict.pop('repo_location')
-        for k, v in group_dict.items():
-            setattr(self, k, v)
+            if self.package != package_check:
+                raise EbuildError(
+                    "Package name mismatch in \"{ebuild}\": {pkg1} != {pkg2}",
+                    path, pkg1=self.package, pkg2=package_check,
+                    code='package_name_mismatch')
 
-        if self.package != package_check:
-            raise EbuildError(
-                "Package name mismatch in \"{ebuild}\": {pkg1} != {pkg2}",
-                path, pkg1=self.package, pkg2=package_check,
-                code='package_name_mismatch')
-
-        self.repository = Repository.find(location=repo_location)
+            self.repository = Repository.find(location=repo_location)
         self.location = Path(path)
 
     def __str__(self):
@@ -114,6 +132,12 @@ class Ebuild(AppiObject):
             if slot != self.slot or (subslot and subslot != self.subslot):
                 return False
         return True
+
+    def __hash__(self):
+        return int(sha1(str(self).encode('utf-8')).hexdigest(), 16)
+
+    def __eq__(self, other):
+        return hash(self) == hash(other)
 
     @property
     def vars(self):

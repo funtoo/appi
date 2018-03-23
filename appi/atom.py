@@ -4,7 +4,7 @@ from functools import reduce
 from pathlib import Path
 import re
 
-from .base import AppiObject
+from .base import constant, AppiObject
 from .base.exception import PortageError
 from .base.util.decorator import cached
 from .conf import Repository
@@ -130,6 +130,10 @@ class BaseAtom(AppiObject):
             locations = Repository.list_locations()
         paths = reduce(lambda x, y: x+y, (
             list(Path(d).glob(glob_pattern)) for d in locations))
+        paths += list(Path(constant.PACKAGE_DB_PATH).glob(re.sub(
+            r'{0}/({0}-.*)\.ebuild$'.format(self.package),
+            r'\1/\1.ebuild', glob_pattern
+        )))
         return {e for e in (Ebuild(p) for p in paths) if e.matches_atom(self)}
 
     def matches_existing_ebuild(self):
