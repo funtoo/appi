@@ -19,8 +19,8 @@ Repository.list(**kwargs) -> ``list``
 -------------------------------------
 
 Return the list of repositories. Keyword arguments may be passed to filter
-repositories according to repository properties. Currently, the only accepted
-property is ``location``.
+repositories according to repository properties. Currently, accepted properties
+are ``location``, ``priority`` and ``auto-sync``.
 
 Examples
 ~~~~~~~~
