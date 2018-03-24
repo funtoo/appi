@@ -18,16 +18,11 @@ docs:
   script:
     - TOXENV=docs
 
-test_py34:
+test_py35:
   stage: test
   script:
-    - TOXENV=py34 tox
+    - TOXENV=py35 tox
 
-# test_py35:
-#   stage: test
-#   script:
-#     - TOXENV=py35 tox
-# 
 # test_py36:
 #   stage: test
 #   script:
