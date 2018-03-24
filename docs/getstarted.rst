@@ -164,12 +164,6 @@ Just as with atoms, you can check the validity of an ebuild by instantiating it.
     <Ebuild: 'foo/bar-1.5a_pre5-r12'>
     >>>
 
-.. warning:: Note that currently, valid paths to unexisting files are considered valid
-             ebuilds. This behavior is very likely to change as of version ``0.1`` since
-             reading the ebuild file will be needed to extract some information such as
-             slots and useflags. Thus, the ``Ebuild`` constructor may also raise
-             ``OSError`` exceptions such as ``FileNotFoundError`` in future versions.
-
 
 Inspect ebuild parts
 --------------------
