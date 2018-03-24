@@ -9,7 +9,7 @@ __all__ = [
 ]
 
 __author__ = "Antoine Pinsard"
-__copyright__ = "Copyright (C) 2017 Antoine Pinsard"
+__copyright__ = "Copyright (C) 2018 Antoine Pinsard"
 __credits__ = ["Antoine Pinsard"]
 __license__ = "GPL-2"
 __version__ = "0.2.0"
