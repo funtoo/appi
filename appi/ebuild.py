@@ -70,8 +70,8 @@ class Ebuild(AppiObject):
             for k, v in group_dict.items():
                 setattr(self, k, v)
             with (self.db_dir / 'repository').open(encoding='utf-8') as f:
-                repository_name = f.read().strip()
-            self.repository = Repository.get(repository_name)
+                self.repo_name = f.read().strip()
+            self.repository = Repository.get(self.repo_name)
         else:
             match = self.path_re.match(path)
             if not match:
@@ -89,6 +89,7 @@ class Ebuild(AppiObject):
                     code='package_name_mismatch')
 
             self.repository = Repository.find(location=repo_location)
+            self.repo_name = self.repository.name if self.repository else None
         self.location = Path(path)
 
     def __str__(self):
@@ -224,13 +225,15 @@ class Ebuild(AppiObject):
 
     def is_installed(self):
         """Return True if this ebuild is installed. False otherwise."""
-        if self.repository and self.db_dir.exists():
+        if self.repo_name and self.db_dir.exists():
             with (self.db_dir / 'repository').open(encoding='utf-8') as f:
-                return f.read().strip() == self.repository.name
+                return f.read().strip() == self.repo_name
         return False
 
     def is_in_tree(self):
-        """Return True if this ebuild is available in the repository."""
+        """Return True if this ebuild is available in the repository.
+        False otherwise.
+        """
         if self.repository:
             location = (
                 self.repository['location'] / self.category / self.package /

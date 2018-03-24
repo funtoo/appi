@@ -155,6 +155,15 @@ class BaseAtom(AppiObject):
                 return True
         return False
 
+    def is_in_tree(self):
+        """Return True if any of the matching ebuilds is available in the
+        repository. False otherwise.
+        """
+        for ebuild in self.list_matching_ebuilds():
+            if ebuild.is_in_tree():
+                return True
+        return False
+
 
 class DependAtom(BaseAtom):
     """An atom used in ebuild dependencies."""
