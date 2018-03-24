@@ -157,3 +157,9 @@ is_installed() -> ``bool``
 --------------------------
 
 Return ``True`` if this ebuild is installed. ``False`` otherwise.
+
+is_in_tree() -> ``bool``
+--------------------------
+
+Return ``True`` if this ebuild is available in the repository. ``False``
+otherwise.
