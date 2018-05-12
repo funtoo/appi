@@ -192,6 +192,8 @@ class BooleanField(Field):
 
     def to_python(self, value):
         value = super().to_python(value)
+        if isinstance(value, str):
+            value = value.lower()
         if value in self.true:
             return True
         elif value in self.false:
