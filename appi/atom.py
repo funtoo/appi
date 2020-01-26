@@ -131,7 +131,7 @@ class BaseAtom(AppiObject):
         paths = reduce(lambda x, y: x+y, (
             list(Path(d).glob(glob_pattern)) for d in locations))
         paths += list(Path(constant.PACKAGE_DB_PATH).glob(re.sub(
-            r'{0}/({0}-.*)\.ebuild$'.format(self.package),
+            r'{0}/({0}-.*)\.ebuild$'.format(re.escape(self.package)),
             r'\1/\1.ebuild', glob_pattern
         )))
         return {e for e in (Ebuild(p) for p in paths) if e.matches_atom(self)}
